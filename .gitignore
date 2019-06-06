@@ -1,0 +1,10 @@
+Debug
+x64
+*.vcxproj
+*.vcxproj.filters
+*.dll
+ScreenCapture.png
+ScreenShot/
+*.vcxproj.user
+config.conf
+Release
