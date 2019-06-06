@@ -86,19 +86,49 @@ void MV(int dx,int dy)
 
 INT main(int argc, CHAR * argv[])
 {
-	Sleep(10000);
-	MV(500, 500);
-	Sleep(20);
-	MLD();
-	MV(600,500);
-	Sleep(20);
-	MV(600, 600);
-	Sleep(20);
-	MV(500, 600);
-	Sleep(20);
-	MV(500, 500);
-	Sleep(20);
-	MLU();
+	Sleep(7000);
+	int x = 100, y = 200;
+	for (int i = 0; i < 30; i++)
+	{
+		int w = 100 +  i * 20;
+		
+		MV(x, y);
+		Sleep(20);
+		MLD();
+
+		MV(x + w, y);
+		Sleep(20);
+		MV(x + w, y + w);
+		Sleep(20);
+		MV(x, y + w);
+		Sleep(20);
+		MV(x, y);
+		Sleep(20);
+		MLU();
+		Sleep(20);
+	}
+
+	x = 130, y = 235;
+	for (int i = 0; i < 30; i++)
+	{
+		int w = 100 + i * 20;
+
+		MV(x, y);
+		Sleep(20);
+		MLD();
+
+		MV(x + w, y);
+		Sleep(20);
+		MV(x + w, y + w);
+		Sleep(20);
+		MV(x, y + w);
+		Sleep(20);
+		MV(x, y);
+		Sleep(20);
+		MLU();
+		Sleep(20);
+	}
+
 
 	return 0 ;
 
