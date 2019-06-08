@@ -10,6 +10,11 @@
 #include <map>
 #include <io.h>
 #include <direct.h>
+
+
+
+#include<math.h>
+#include<windows.h>
 using namespace std;
 using std::vector;
 using std::string;
@@ -84,54 +89,125 @@ void MV(int dx,int dy)
 	SendInput(1, &Input, sizeof(INPUT));
 }
 
+void MLC()
+{
+	MLD();
+	MLU();
+}
+
+
+
+void GetMousePosition()
+{
+	int x = 0;
+	POINT  last = {0,0};
+	while (x < 1500)
+	{
+		POINT  m_mouse;
+
+		GetCursorPos(&m_mouse);
+		if(!(last.x == m_mouse.x && last.y == m_mouse.y))
+			printf("%d,%d\n", m_mouse.x, m_mouse.y);
+		
+		x = m_mouse.x;
+		last = m_mouse;
+		Sleep(100);
+	}
+}
+
+void ResetCanvas()
+{
+	POINT SelectButton = { 122 ,68 };
+	POINT BrushButton = { 345 ,73 };
+	POINT LeftUp = { 5 ,164 };
+	POINT RightButtom = { 946 ,782 };
+
+	MV(SelectButton.x, SelectButton.y);
+	MLC();
+
+	MV(LeftUp.x, LeftUp.y);
+	MLD();
+	MV(RightButtom.x, RightButtom.y);
+	MLU();
+
+	WORD Keys[] = { VK_DELETE };
+	SimulateKeyArrayInput(Keys, sizeof(Keys) / sizeof(WORD));
+
+	MV(BrushButton.x, BrushButton.y);
+	MLC();
+
+}
+
+VOID DrawC(int x0,int y0,int r)
+{
+
+
+	//int x0 = 500, y0 = 500;
+	int x = 0, y = 0;
+	// x*x + y*y = r*r
+
+	//int r = 100;
+	int sl = 1;
+
+	MV(x0 + r, y0);
+	Sleep(sl);
+	MLD();
+	for (int i = r; i >= 0; i--)
+	{
+		y = y0 - (int)round(sqrt(r * r - i * i));
+		x = x0 + i;
+		MV(x, y);
+		Sleep(sl);
+	}
+
+	for (int i = 0; i <= r; i++)
+	{
+		y = y0 - (int)round(sqrt(r * r - i * i));
+		x = x0 - i;
+		MV(x, y);
+		Sleep(sl);
+	}
+
+	for (int i = r; i >= 0; i--)
+	{
+		y = y0 + (int)round(sqrt(r * r - i * i));
+		x = x0 - i;
+		MV(x, y);
+		Sleep(sl);
+	}
+
+	for (int i = 0; i <= r; i++)
+	{
+		y = y0 + (int)round(sqrt(r * r - i * i));
+		x = x0 + i;
+		MV(x, y);
+		Sleep(sl);
+	}
+
+	MLU();
+}
+
+
 INT main(int argc, CHAR * argv[])
 {
+	//GetMousePosition();
+	//return 0;
 	Sleep(7000);
-	int x = 100, y = 200;
-	for (int i = 0; i < 30; i++)
+
+	ResetCanvas();
+	Sleep(100);
+
+
+
+	for (int i = 0; i < 35; i++)
 	{
-		int w = 100 +  i * 20;
-		
-		MV(x, y);
-		Sleep(20);
-		MLD();
+		DrawC(200 + i * 6, 500, 30 + i * 5);
 
-		MV(x + w, y);
-		Sleep(20);
-		MV(x + w, y + w);
-		Sleep(20);
-		MV(x, y + w);
-		Sleep(20);
-		MV(x, y);
-		Sleep(20);
-		MLU();
-		Sleep(20);
-	}
-
-	x = 130, y = 235;
-	for (int i = 0; i < 30; i++)
-	{
-		int w = 100 + i * 20;
-
-		MV(x, y);
-		Sleep(20);
-		MLD();
-
-		MV(x + w, y);
-		Sleep(20);
-		MV(x + w, y + w);
-		Sleep(20);
-		MV(x, y + w);
-		Sleep(20);
-		MV(x, y);
-		Sleep(20);
-		MLU();
-		Sleep(20);
 	}
 
 
-	return 0 ;
-
+	return 0;
+	
 
 	g_argv.ParseArgvs(argc, argv);
 
@@ -182,32 +258,3 @@ INT main(int argc, CHAR * argv[])
 	return 0;
 }
 
-
-INT mainSUI(int argc, CHAR * argv[]) 
-{
-	g_argv.ParseArgvs(argc, argv);
-
-	DWORD   dwThreadId;
-	HANDLE  hThread;
-	hThread = CreateThread(
-		NULL,                   // default security attributes
-		0,                      // use default stack size  
-		ThreadFunction,       // thread function name
-		NULL,          // argument to thread function 
-		0,                      // use default creation flags 
-		&dwThreadId);   // returns the thread identifier 
-
-	if (hThread == NULL)
-	{
-		printf("CreateThread Error \n");
-		return -1;
-	}
-
-	WaitForSingleObject(hThread, 15000);
-	CloseHandle(hThread);
-	// thread
-
-	// -t  2000
-	// --s=QGX78eMAw5C2UWdL
-	return 0;
-}
