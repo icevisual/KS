@@ -31,6 +31,9 @@ int SimulateCMDs::Run()
 		case 'M':
 			Process_M(params);
 			break;
+		case 'D':
+			Process_D(params);
+			break;
 		default:
 			break;
 		}
@@ -69,7 +72,7 @@ int SimulateCMDs::Process_K(string params)
 {
 	printf("K = %s\n", params.c_str());
 	WORD Keys[] = { VK_LMENU,VK_F4 };
-	SimulateKeyArrayInput(Keys, sizeof(Keys) / sizeof(WORD));
+	PressKeys(Keys);
 	return 0;
 }
 
@@ -94,9 +97,7 @@ int SimulateCMDs::Process_F(string params)
 				VK_F6,VK_F7,VK_F8,VK_F9,VK_F10 ,
 				VK_F11,VK_F12,VK_F13,VK_F14,VK_F15
 	};
-	WORD Keys[] = { FnKeys[Fn] };
-	SimulateKeyArrayInput(Keys, sizeof(Keys) / sizeof(WORD));
-
+	PressKey(FnKeys[Fn]);
 	return 0;
 }
 
@@ -104,8 +105,7 @@ int SimulateCMDs::Process_F(string params)
 int SimulateCMDs::Process_E(string params)
 {
 	printf("E = %s\n", params.c_str());
-	WORD Keys[] = { VK_RETURN };
-	SimulateKeyArrayInput(Keys, sizeof(Keys) / sizeof(WORD));
+	PressKey(VK_RETURN);
 	return 0;
 }
 
@@ -113,6 +113,28 @@ int SimulateCMDs::Process_E(string params)
 int SimulateCMDs::Process_M(string params)
 {
 	printf("M = %s\n", params.c_str());
+
+
+
 	return 0;
 }
 
+
+int SimulateCMDs::Process_D(string params)
+{
+	printf("D = %s\n", params.c_str());
+	PressKey(VK_DELETE);
+	return 0;
+}
+
+int SimulateCMDs::PressKey(WORD KeyCode)
+{
+	WORD Keys[] = { KeyCode };
+	SimulateKeyArrayInput(Keys, sizeof(Keys) / sizeof(WORD));
+	return 0;
+}
+int SimulateCMDs::PressKeys(WORD KeyCode[])
+{
+	SimulateKeyArrayInput(KeyCode, sizeof(KeyCode) / sizeof(WORD));
+	return 0;
+}

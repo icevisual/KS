@@ -89,13 +89,23 @@ void MV(int dx,int dy)
 	SendInput(1, &Input, sizeof(INPUT));
 }
 
+void MV2(int x, int y)
+{
+	SetCursorPos(x, y);
+}
+
 void MLC()
 {
 	MLD();
 	MLU();
 }
 
-
+void MLC(int x,int y)
+{
+	SetCursorPos(x,y);
+	MLD();
+	MLU();
+}
 
 void GetMousePosition()
 {
@@ -112,6 +122,23 @@ void GetMousePosition()
 		x = m_mouse.x;
 		last = m_mouse;
 		Sleep(100);
+	}
+}
+
+void CalcColorPoint(vector<POINT> &R)
+{
+	POINT LeftTop = {764,57};
+	int W = 16;
+	int Gap = 6;
+	int Count = 10;
+	int Line = 2;
+	for (int i = 0; i < Line; i++)
+	{
+		for (int j = 0; j < Count; j++)
+		{
+			POINT p = { LeftTop.x + W / 2 + j * (Gap + W),LeftTop.y + W / 2 + i * (Gap + W) };
+			R.push_back(p);
+		}
 	}
 }
 
@@ -138,16 +165,42 @@ void ResetCanvas()
 
 }
 
+VOID DrawLine(int x0, int y0, int x1, int y1)
+{
+	MV2(x0,y0);
+	MLD();
+	MV(x1, y1);
+	MLU();
+}
+
+VOID DrawFFF()
+{
+	vector<POINT> R;
+	CalcColorPoint(R);
+	int rsize = R.size();
+	POINT Start = {200,200};
+	for (int i = 0; i < 100; i++)
+	{
+		MLC(R[(i) % rsize].x, R[(i) % rsize].y);
+		DrawLine(Start.x, Start.y + i, Start.x + 300, Start.y + i);
+		Sleep(1);
+	}
+	
+}
+
+
 VOID DrawC(int x0,int y0,int r)
 {
-
+	vector<POINT> R;
+	CalcColorPoint(R);
+	int rsize = R.size();
 
 	//int x0 = 500, y0 = 500;
 	int x = 0, y = 0;
 	// x*x + y*y = r*r
 
 	//int r = 100;
-	int sl = 1;
+	int sl = 5;
 
 	MV(x0 + r, y0);
 	Sleep(sl);
@@ -157,6 +210,10 @@ VOID DrawC(int x0,int y0,int r)
 		y = y0 - (int)round(sqrt(r * r - i * i));
 		x = x0 + i;
 		MV(x, y);
+		MLU();
+		MLC(R[(x ) % rsize].x, R[(x) % rsize].y);
+		MV2(x, y);
+		MLD();
 		Sleep(sl);
 	}
 
@@ -192,14 +249,17 @@ INT main(int argc, CHAR * argv[])
 {
 	//GetMousePosition();
 	//return 0;
+	
+	//vector<POINT> R;
+	//CalcColorPoint(R);
 	Sleep(7000);
-
-	ResetCanvas();
+	DrawFFF();
+	return 0;
+    ResetCanvas();
 	Sleep(100);
 
 
-
-	for (int i = 0; i < 35; i++)
+	for (int i = 0; i < 20; i++)
 	{
 		DrawC(200 + i * 6, 500, 30 + i * 5);
 

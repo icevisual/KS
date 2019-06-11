@@ -17,4 +17,7 @@ public:
 	int Process_F(string params);
 	int Process_E(string params);
 	int Process_M(string params);
+	int Process_D(string params);
+	int PressKey(WORD KeyCode);
+	int PressKeys(WORD KeyCode[]);
 };
