@@ -247,26 +247,26 @@ VOID DrawC(int x0,int y0,int r)
 
 INT main(int argc, CHAR * argv[])
 {
-	//GetMousePosition();
+	////GetMousePosition();
+	////return 0;
+	//
+	////vector<POINT> R;
+	////CalcColorPoint(R);
+	//Sleep(7000);
+	//DrawFFF();
 	//return 0;
-	
-	//vector<POINT> R;
-	//CalcColorPoint(R);
-	Sleep(7000);
-	DrawFFF();
-	return 0;
-    ResetCanvas();
-	Sleep(100);
+ //   ResetCanvas();
+	//Sleep(100);
 
 
-	for (int i = 0; i < 20; i++)
-	{
-		DrawC(200 + i * 6, 500, 30 + i * 5);
+	//for (int i = 0; i < 20; i++)
+	//{
+	//	DrawC(200 + i * 6, 500, 30 + i * 5);
 
-	}
+	//}
 
 
-	return 0;
+	//return 0;
 	
 
 	g_argv.ParseArgvs(argc, argv);
@@ -284,7 +284,7 @@ INT main(int argc, CHAR * argv[])
 		scl.ParseCMDs(SimulateString);
 		scl.Run();
 	}
-
+	return 0;
 	// CMD List 
 	// K=kill(Alt + F4) F11=fn S2000=Sleep 2000 E=Hit Enter M=Mouse Click(L1|R1|M1,100,100)
 	//
