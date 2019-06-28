@@ -89,9 +89,9 @@ VOID FileConfig::ParseArgvs(int argc, CHAR * argv[])
 				string k_str = line.substr(t - 1, loc - t + 1);
 				string v_str = line.substr(loc + 1);
 				g_Argvs.insert(pair<string, string>(k_str, v_str));
-				printf("K = |%s| V = |%s|\n"
+		/*		printf("K = |%s| V = |%s|\n"
 					, k_str.c_str()
-					, v_str.c_str());
+					, v_str.c_str());*/
 			}
 			else
 			{
@@ -102,9 +102,9 @@ VOID FileConfig::ParseArgvs(int argc, CHAR * argv[])
 				if (argc > i + 1)
 				{
 					string v_str(argv[i + 1]);
-					printf("K = |%s| V = |%s|\n"
+			/*		printf("K = |%s| V = |%s|\n"
 						, k_str.c_str()
-						, v_str.c_str());
+						, v_str.c_str());*/
 					g_Argvs.insert(pair<string, string>(k_str, v_str));
 					i++;
 				}

@@ -472,7 +472,6 @@ VOID SimulateKeyArrayInput(WORD  Keys[], CHAR Count)
 	SendInput(KeyCount, input, sizeof(INPUT));
 }
 
-
 VOID SimulateMouseArrayInput(WORD  Keys[], CHAR Count)
 {
 	INT RevK = 0;

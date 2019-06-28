@@ -268,53 +268,25 @@ INT main(int argc, CHAR * argv[])
 
 	//return 0;
 	
-
 	g_argv.ParseArgvs(argc, argv);
-
-	INT SleepMilliSeconds = g_argv.GetArgv_INT("t", 2000);
 	string SimulateString = g_argv.GetArgv_string("s", "");
-	INT Fn = g_argv.GetArgv_INT("f", 0);
-	INT Kill = g_argv.GetArgv_INT("kill", 0);
-
-	INT UsingCMD = g_argv.GetArgv_INT("uc", 0);
-
-	if (UsingCMD > 0)
+	SimulateCMDs scl;
+	if (SimulateString.length() <= 0)
 	{
-		SimulateCMDs scl;
-		scl.ParseCMDs(SimulateString);
-		scl.Run();
+		scl.ShowHelp();
+		return 0;
 	}
+	
+	scl.ParseCMDs(SimulateString);
+	scl.Run();
 	return 0;
 	// CMD List 
-	// K=kill(Alt + F4) F11=fn S2000=Sleep 2000 E=Hit Enter M=Mouse Click(L1|R1|M1,100,100)
-	//
-	if (SimulateString.length() > 0)
-	{
-		if(SleepMilliSeconds > 0 )
-			Sleep(SleepMilliSeconds);
-		if (Fn > 0 && Fn <=15 )
-		{
-			WORD FnKeys[] = { 
-				0,VK_F1,VK_F2,VK_F3,VK_F4,VK_F5 ,
-				VK_F6,VK_F7,VK_F8,VK_F9,VK_F10 ,
-				VK_F11,VK_F12,VK_F13,VK_F14,VK_F15 
-			};
-			WORD Keys[] = { FnKeys[Fn] };
-			SimulateKeyArrayInput(Keys, sizeof(Keys) / sizeof(WORD));
-		}
-		else if (Kill > 0)
-		{
-			WORD Keys[] = { VK_LMENU,VK_F4 };
-			SimulateKeyArrayInput(Keys, sizeof(Keys) / sizeof(WORD));
-		}
-		else
-		{
-			ConvertChar2KeyWordAndSimulate(SimulateString);
-			WORD Keys[] = { VK_RETURN };
-			SimulateKeyArrayInput(Keys, sizeof(Keys) / sizeof(WORD));
-		}
+	// K=kill(Alt + F4) F11=fn S2=Sleep 2000ms E=Hit Enter 
+	// M=Mouse Click(L1|R1|M1,100,100)
+	//  点击       MCL|MCR|MCM
+	//  按下、弹起 MALD|MALU|MARD|MARU
+	//  移动 到    MM100,200
+	//  设置 坐标  MS100,200
 
-	}
-	return 0;
 }
 
