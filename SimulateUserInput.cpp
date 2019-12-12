@@ -268,11 +268,31 @@ INT main(int argc, CHAR * argv[])
 
 	//return 0;
 	
+	// ./WinGHotKey.exe -t=5000 -s="IZ S500 Id S300 P E" -c=1000 -i=300
 
 	g_argv.ParseArgvs(argc, argv);
-
-	INT SleepMilliSeconds = g_argv.GetArgv_INT("t", 2000);
+	// 准备时间 ms
+	INT SleepMilliSeconds = g_argv.GetArgv_INT("t", 0);
+	// 循环次数
+	INT Cycle = g_argv.GetArgv_INT("c", 1);
+	// 循环间隔 ms
+	INT Interval = g_argv.GetArgv_INT("i", 200);
+	// 指令
 	string SimulateString = g_argv.GetArgv_string("s", "");
+	if (SleepMilliSeconds > 0)
+		Sleep(SleepMilliSeconds);
+	if (SimulateString.length() > 0)
+	{
+		for (int i = 0; i < Cycle; i++)
+		{
+			SimulateCMDs scl;
+			scl.ParseCMDs(SimulateString);
+			scl.Run();
+			Sleep(Interval);
+		}
+	}
+
+	
 	INT Fn = g_argv.GetArgv_INT("f", 0);
 	INT Kill = g_argv.GetArgv_INT("kill", 0);
 
@@ -280,9 +300,7 @@ INT main(int argc, CHAR * argv[])
 
 	if (UsingCMD > 0)
 	{
-		SimulateCMDs scl;
-		scl.ParseCMDs(SimulateString);
-		scl.Run();
+		
 	}
 	return 0;
 	// CMD List 
