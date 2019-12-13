@@ -100,7 +100,13 @@ int SimulateCMDs::ShowHelp()
 {
 	printf("\n\
 Usage:  \n\
-  WinHotKeyA -s=\"Commands[options] Commands[options] ...\"\n\
+  WinHotKeyA [options] -s=\"Commands[options] Commands[options] ...\"\n\
+\n\
+  Options\n\
+    -t=<n>        Wait n ms Before Start\n\
+    -c=<n>        Cycle n Times\n\
+    -i=<n>        Cycle Wait Interval (ms)\n\
+    -s=<str>      Commands\n\
 \n\
   Commands:\n\
     K              Win + F4\n\
@@ -110,6 +116,8 @@ Usage:  \n\
     E              Enter\n\
     M(CAMS)        Mouse Action\n\
     D              Delete\n\
+    C              Copy\n\
+    P              Paste\n\
 \n\
   Parameters for M:\n\
     MC[LMR]          Left|Right|Middle Click\n\
@@ -263,7 +271,7 @@ int SimulateCMDs::Process_C(string params)
 }
 int SimulateCMDs::Process_P(string params)
 {
-	printf("C = %s\n", params.c_str());
+	printf("P = %s\n", params.c_str());
 	WORD Keys[] = { VK_CONTROL, 'v' - 'a' + 'A' };
 	PressKeys(Keys);
 	return 0;
@@ -319,6 +327,9 @@ void SimulateCMDs::MMD()
 void SimulateCMDs::MMU()
 {
 	SingleKeyDown(MOUSEEVENTF_MIDDLEUP);
+
+
+
 }
 
 void SimulateCMDs::MV(int dx, int dy)
@@ -357,6 +368,9 @@ void SimulateCMDs::MRC()
 
 void SimulateCMDs::MMC()
 {
+	//WORD Keys[] = { MOUSEEVENTF_MIDDLEDOWN,MOUSEEVENTF_MIDDLEUP };
+	//SimulateKeyArrayInput(Keys, sizeof(Keys) / sizeof(WORD));
+
 	MMD();
 	MMU();
 }
