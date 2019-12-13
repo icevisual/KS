@@ -269,6 +269,7 @@ INT main(int argc, CHAR * argv[])
 	//return 0;
 	// Elona Wish Ctrl + V
 	// ./WinGHotKey.exe -t=5000 -s="IZ S500 Id S300 P E" -c=1000 -i=300
+	// ./WinGHotKey.exe -t=5000 -s="{IZ S500 Id S300 P {E}2}2" -c=1000 -i=300
 	// ./WinGHotKey.exe -t=5000 -s="MCM" quest  
 
 	g_argv.ParseArgvs(argc, argv);
