@@ -10,6 +10,8 @@ using namespace std;
 
 int SimulateCMDs::Run()
 {
+	// R0(S2 E )
+	// K=kill(Alt + F4) F11=fn S2000=Sleep 2000 E=Hit Enter M=Mouse Click(L1|R1|M1,100,100)
 	for (int i = 0; i < CMDList.size(); i++)
 	{
 		char CMDKey = CMDList[i].at(0);
@@ -21,6 +23,11 @@ int SimulateCMDs::Run()
 			break;
 		case 'I':
 			Process_I(params);
+		case 'C':
+			Process_C(params);
+			break;
+		case 'P':
+			Process_P(params);
 			break;
 		case 'S':
 			Process_S(params);
@@ -67,7 +74,7 @@ int SimulateCMDs::ParseCMDs(string str)
 		i = j;
 		i++;
 	}
-
+	
 	return 0;
 }
 
@@ -128,7 +135,7 @@ int SimulateCMDs::Process_S(string params)
 	INT r = ParseInt(params);
 
 	if (r > 0)
-		Sleep(r * 1000);
+		Sleep(r);
 	return 0;
 }
 
@@ -215,7 +222,6 @@ int SimulateCMDs::Process_M(string params)
 		case 'M':
 			params.at(2) == 'D' ? MMD() : MMU();
 			break;
-
 		default:
 			break;
 		}
@@ -248,6 +254,25 @@ int SimulateCMDs::Process_D(string params)
 	return 0;
 }
 
+int SimulateCMDs::Process_C(string params)
+{
+	printf("C = %s\n", params.c_str());
+	WORD Keys[] = { VK_CONTROL, 'c' - 'a' + 'A' };
+	PressKeys(Keys);
+	return 0;
+}
+int SimulateCMDs::Process_P(string params)
+{
+	printf("C = %s\n", params.c_str());
+	WORD Keys[] = { VK_CONTROL, 'v' - 'a' + 'A' };
+	PressKeys(Keys);
+	return 0;
+}
+int SimulateCMDs::EnterWords(string words)
+{
+	ConvertChar2KeyWordAndSimulate(words);
+	return 0;
+}
 int SimulateCMDs::PressKey(WORD KeyCode)
 {
 	WORD Keys[] = { KeyCode };
