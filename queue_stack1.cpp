@@ -23,9 +23,9 @@ private:
 template<typename T>
 void CStack<T>::push(const T & node)
 {
-	if(queue1.empty() && queue2.empty())
+	if (queue1.empty() && queue2.empty())
 		queue1.push(node);
-	else if(queue1.empty())
+	else if (queue1.empty())
 	{
 		queue2.push(node);
 	}
@@ -57,8 +57,8 @@ T CStack<T>::pop()
 }
 
 
-
-int main()
+ 
+static int test()
 {
 	clock_t t = clock();
 	int * A = new int[8]{ 1,2,4,7,3,5,6,8 };
@@ -72,10 +72,10 @@ int main()
 
 	for (int i = 0; i < 3; i++)
 	{
-		printf("%d\n",q.pop());
+		printf("%d\n", q.pop());
 	}
 
-	
+
 	_CrtDumpMemoryLeaks();
 	system("pause");
 	return 0;
