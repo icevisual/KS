@@ -18,6 +18,11 @@ int SimulateCMDs::Run()
 		string params = CMDList[i].substr(1);
 		switch (CMDKey)
 		{
+		case 'G':
+			POINT p;
+			GetCursorPos(&p);
+			printf("(%d,%d)\n", p.x, p.y);
+			break;
 		case 'K':
 			Process_K(params);
 			break;

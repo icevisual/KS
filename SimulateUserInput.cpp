@@ -245,7 +245,7 @@ VOID DrawC(int x0,int y0,int r)
 }
 
 
-INT mainf(int argc, CHAR * argv[])
+INT main(int argc, CHAR * argv[])
 {
 	////GetMousePosition();
 	////return 0;
@@ -265,13 +265,12 @@ INT mainf(int argc, CHAR * argv[])
 
 	//}
 
-
 	//return 0;
 	// Elona Wish Ctrl + V
 	// ./WinGHotKey.exe -t=5000 -s="IZ S500 Id S300 P E" -c=1000 -i=300
 	// ./WinGHotKey.exe -t=5000 -s="{IZ S500 Id S300 P {E}2}2" -c=1000 -i=300
 	// ./WinGHotKey.exe -t=5000 -s="MCM" quest  
-
+	// 需要授权的确认界面，无法用程序模拟点击
 	g_argv.ParseArgvs(argc, argv);
 	// 准备时间 ms
 	INT SleepMilliSeconds = g_argv.GetArgv_INT("t", 0);
@@ -299,7 +298,7 @@ INT mainf(int argc, CHAR * argv[])
 		scl.ShowHelp();
 		return 0;
 	}
-
+	
 	
 	return 0;
 	// CMD List 

@@ -58,7 +58,7 @@ T CStack<T>::pop()
 
 
 
-int main()
+int main0()
 {
 	clock_t t = clock();
 	int * A = new int[8]{ 1,2,4,7,3,5,6,8 };
