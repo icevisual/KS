@@ -245,7 +245,7 @@ VOID DrawC(int x0,int y0,int r)
 }
 
 
-INT main(int argc, CHAR * argv[])
+INT main0(int argc, CHAR * argv[])
 {
 	////GetMousePosition();
 	////return 0;
