@@ -267,7 +267,7 @@ void helloworld(string SimulateString)
 }
 
 
-INT main(int argc, CHAR * argv[])
+INT main2222(int argc, CHAR * argv[])
 {
 	// 582 443 + 20
 	// Elona Wish Ctrl + V

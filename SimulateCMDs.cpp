@@ -19,55 +19,65 @@ int SimulateCMDs::Run()
 		switch (CMDKey)
 		{
 		case 'G':
+			// Get Mouse Position
 			POINT p;
 			GetCursorPos(&p);
 			// printf("(%d,%d)\n", p.x, p.y);
 			cout << "(" << p.x << "," << p.y << ")" << endl;
 			break;
 		case 'K':
+			// Alt + F4
 			Process_K(params);
 			break;
 		case 'I':
+			// Input str
 			Process_I(params);
 		case 'C':
+			// Ctrl + C
 			Process_C(params);
 			break;
 		case 'P':
+			// Ctrl + V
 			Process_P(params);
 			break;
 		case 'S':
+			// Sleep ms
 			Process_S(params);
 			break;
 		case 'F':
+			// FN
 			Process_F(params);
 			break;
 		case 'E':
+			// Enter
 			Process_E(params);
 			break;
 		case 'M':
+			// M=Mouse Click(L1|R1|M1,100,100)
+			// Mouse Move
+			// Mouse Double Click
+			// MS set position
 			Process_M(params);
 			break;
 		case 'D':
+			// Delete
 			Process_D(params);
 		case 'L':
+			// Win + Shift + L
 			Process_L(params);
-			break;
-		case 'H':
-			
 			break;
 		case 'W':
 		{
+			// Whell W1 W-1
 			printf("S = %s\n", params.c_str());
 			INT r = ParseInt(params);
-			printf("wwwww\n");
+			printf("Wheel\n");
 			INPUT Input = { 0 };
 			Input.type = INPUT_MOUSE;
 			Input.mi.dwFlags = MOUSEEVENTF_WHEEL;
-			Input.mi.mouseData = r;
+			Input.mi.mouseData = WHEEL_DELTA * r;
 			SendInput(1, &Input, sizeof(INPUT));
 		}
-
-		// mouse_event(MOUSEEVENTF_WHEEL, 0, 10, WHEEL_DELTA * 10, 0);
 		break;
 		default:
 			break;
@@ -75,85 +85,6 @@ int SimulateCMDs::Run()
 	}
 	return 0;
 }
-//
-//class KSCommand
-//{
-//public:
-//	string Cmd;
-//	bool IsSub = false;
-//	KSCommandTree * SubCmds;
-//	KSCommandTree * Parent;
-//};
-//// ÓÐË³Ðò
-//class KSCommandTree
-//{
-//public:
-//	vector<KSCommand> CmdList;
-//	int Count = 0;
-//public:
-//	void AddCmd(string);
-//	KSCommandTree * AddSub();
-//};
-//
-//KSCommandTree * KSCommandTree::AddSub()
-//{
-//	KSCommand k;
-//	k.IsSub = true;
-//	k.Parent = this;
-//	k.SubCmds = new KSCommandTree();
-//	return k.SubCmds;
-//}
-//
-//void KSCommandTree::AddCmd(string cmd)
-//{
-//	KSCommand k;
-//	k.Cmd = cmd;
-//	CmdList.push_back(k);
-//}
-//
-//int ParseCMDs1(string str)
-//{
-//	str = str.append(" ");
-//	const char * chrs = str.c_str();
-//	INT Length = str.length();
-//	INT i = 0;
-//	INT j = 0;
-//	auto root = new KSCommandTree();
-//	while (i < Length)
-//	{
-//		// trim 
-//		while (chrs[i] == ' ') i++;
-//		j = i;
-//		if (j >= Length)
-//			break;
-//		while (chrs[j++] == '{')
-//		{
-//			root = root->AddSub();
-//		}
-//		while (chrs[j] != ' ' && chrs[j] != '}'&& chrs[j] != '{') j++;
-//		string p = str.substr(i, j - i);
-//		root->AddCmd(p);
-//
-//		while (chrs[j++] == '}')
-//		{
-//			int count = 0;
-//			while (chrs[j] >= '0' && chrs[j] <= '9')
-//			{
-//				count = count * 10 + chrs[j] - '0';
-//				j++;
-//			}
-//			root->Count = count == 0 ? 1 : count;
-//			root = root->AddSub();
-//		}
-//		// p = p.append('\0');
-//		// CMDList.push_back(p);
-//		i = j;
-//		i++;
-//	}
-//
-//	return 0;
-//}
-
 
 int SimulateCMDs::ParseCMDs(string str)
 {
