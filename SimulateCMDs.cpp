@@ -19,6 +19,17 @@ int SimulateCMDs::Run()
 		switch (CMDKey)
 		{
 		case 'G':
+
+
+			if (params.at(0) == 'W') {
+				// Ctrl + W : Close Page
+				printf("Ctrl + w\n");
+				WORD Keys[] = { VK_CONTROL,'w' - 'a' + 'A' };
+				PressKeys(Keys);
+
+				break;
+			}
+
 			// Get Mouse Position
 			POINT p;
 			GetCursorPos(&p);
