@@ -13,7 +13,6 @@
 
 #include <thread>
 #include <future>
-
 #include<math.h>
 #include<windows.h>
 using namespace std;
@@ -294,7 +293,8 @@ int RegisterHotKeys()
 		if (msg.message == WM_HOTKEY) {
 
 			if (m_HotKeyId1 == msg.wParam) {
-				G_Cycle_Stop = true;
+				cout << "User Stopped" << endl;
+				exit(0);
 				break;
 			}
 			else if (m_HotKeyId2 == msg.wParam) {
@@ -348,11 +348,6 @@ INT KSMain(int argc, CHAR * argv[])
 			SimulateCMDs scl;
 			scl.RunCMD(SimulateString);
 			Sleep(Interval);
-
-			if (G_Cycle_Stop) {
-				cout << "User Stop Cycle"  <<endl;
-				break;
-			}
 		}
 		
 

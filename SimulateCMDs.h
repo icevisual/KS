@@ -14,7 +14,7 @@ public:
 	// 将指令行 分解成 单个指令
 	int ParseCMDs(string str);
 
-	// 遍历 KSCommand 的回调函数 
+	// 遍历 KSCommand 的回调函数 ,避免循环引用头文件，使用 void *
 	int ProcessKSCommand(void * cmd);
 	// 用 KSCommand 分解遍历 指令
 	int RunCMD(string str);

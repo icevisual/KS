@@ -132,7 +132,6 @@ int SimulateCMDs::RunCMD(string SimulateString)
 {
 	//ParseCMDs(SimulateString);
 	//Run();
-	
 	KSCommand cmd;
 	KSCommand::ParseStr2KSCmd(SimulateString, cmd);
 	KSCommand::LoopCmdS(cmd, this);

@@ -23,11 +23,15 @@ public:
 	int CycleTime = 1;
 	// 触发条件
 	string Condition;
-	
+
 public:
+	// 将一行指令分割 {} ，转为 前中后 三个部分 
 	static int GetSubSeg(string str, vector<string> &sub, int &count);
+	// 递归调用 GetSubSeg 去除指令 存入 KSCommand 中
 	static void ParseStr2KSCmd(string str, KSCommand &cmd);
+	// 
 	static void LoopCmd(KSCommand cmd, cmd_callback callback);
+	// 避免循环引用头文件，使用 void *
 	static void LoopCmdS(KSCommand cmd, void *  s);
 };
 
