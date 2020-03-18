@@ -9,7 +9,6 @@ void KSTreeNode::AddSub(KSCommand * Data)
 	Sub = NewNode;
 }
 
-
 //
 //class KSCommand
 //{

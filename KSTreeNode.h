@@ -11,10 +11,13 @@ using namespace std;
 class KSCommand
 {
 public:
-	// 指令内容
 	string Cmd;
+	// 指令内容
+	vector<KSCommand> SubCmds;
+
+	bool HasSubCmds = false;
 	// 循环次数
-	int CycleTime;
+	int CycleTime = 1;
 	// 触发条件
 	string Condition;
 };

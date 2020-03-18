@@ -76,6 +76,8 @@ char* wideCharToMultiByte(wchar_t* pWCStrKey);
 
 INT RandomInt(INT min, INT max);
 BOOL DoubleEqual(DOUBLE a, DOUBLE b);
+
+void CuteScreenRect(LPCSTR filename, LPRECT lpRect);
 // 截屏
 HBITMAP ScreenCapture(LPCSTR filename, WORD BitCount, LPRECT lpRect);
 // 模拟键盘输入，低四位分别 代表 是否 Shift、Ctrl、Win、Alt

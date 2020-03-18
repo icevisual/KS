@@ -4,8 +4,117 @@
 #include <iostream>  
 #include <map> 
 #include "SimulateCMDs.h"
+#include <iostream>  
 
 using namespace std;
+
+#include <opencv2/opencv.hpp>  
+#include<opencv2/highgui/highgui.hpp>  
+#include<opencv2/imgproc/imgproc.hpp>  
+
+
+#include <cv.h>  
+#include <highgui.h>  
+
+using namespace cv;
+
+Mat& ScanImageAndReduceIterator(Mat I)
+{
+	// accept only char type matrices
+	CV_Assert(I.depth() == CV_8U);
+	const int channels = I.channels();
+	switch (channels)
+	{
+	case 1:
+	{
+		MatIterator_<uchar> it, end;
+		for (it = I.begin<uchar>(), end = I.end<uchar>(); it != end; ++it)
+			printf("%d ", *it);
+		break;
+	}
+	case 3:
+	{
+		//MatIterator_<Vec3b> it, end;
+		//for (it = I.begin<Vec3b>(), end = I.end<Vec3b>(); it != end; ++it)
+		//{
+		//	printf("%d,%d,%d\n", (*it)[0], (*it)[1], (*it)[2]);
+		//}
+
+		int nRows = I.rows;
+		int nCols = I.cols * channels;
+		int i = 0, j = 0;
+		Vec3b * p;
+		for (i = 0; i < nRows; ++i)
+		{
+			p = I.ptr<Vec3b>(i);
+			for (j = 0; j < nCols; ++j)
+			{
+				printf("%d,%d,%d ", p[j][0], p[j][1], p[j][2]);
+			}
+			printf("\n");
+		}
+
+	}
+	}
+	return I;
+}
+
+
+
+int ScanImageCalcAvgColor(Mat I,bool show = false)
+{
+	// accept only char type matrices
+	CV_Assert(I.depth() == CV_8U);
+	const int channels = I.channels();
+	if (channels != 1)
+		return 0;
+	int s = 0;
+	int c = 0;
+	int nRows = I.rows;
+	int nCols = I.cols * channels;
+	int i = 0, j = 0;
+	uchar * p;
+	for (i = 0; i < nRows; i += 2)
+	{
+		p = I.ptr<uchar>(i);
+		for (j = 0; j < nCols; j += 2)
+		{
+			s += p[j];
+			c++;
+			if (show)
+				printf("%d ", p[j]);
+		}
+		if (show)
+			printf("\n");
+	}
+	if (c == 0)
+		return 0;
+	return s / c;
+}
+
+
+int CutScreenAndCalcAvgColor(int x,int y,int cx,int cy)
+{
+	LPRECT r = new RECT{ x,y,cx,cy };
+	LPSTR addr = "CutScreenAndCalcAvgColor.png";
+	CuteScreenRect(addr, r);
+
+	Mat I = imread(string(addr), IMREAD_COLOR);
+	Mat temp_gray;
+
+	cvtColor(I, temp_gray, COLOR_BGR2GRAY);
+	delete r;
+	return ScanImageCalcAvgColor(temp_gray);
+}
+
+bool AreaBlack()
+{
+	return CutScreenAndCalcAvgColor(200, 400, 220, 420) < 10;
+}
+bool AreaWhite()
+{
+	return CutScreenAndCalcAvgColor(649, 606, 740, 640) > 200;
+}
 
 
 int SimulateCMDs::Run()
@@ -21,7 +130,7 @@ int SimulateCMDs::Run()
 		case 'G':
 
 
-			if (params.at(0) == 'W') {
+			if (params.length() > 0 && params.at(0) == 'W') {
 				// Ctrl + W : Close Page
 				printf("Ctrl + w\n");
 				WORD Keys[] = { VK_CONTROL,'w' - 'a' + 'A' };
@@ -100,9 +209,33 @@ int SimulateCMDs::Run()
 		}
 		case 'J':
 		{
-			LPRECT r = new RECT{ 100,100,120,120 };
-			ScreenCapture(NULL,8,r);
-			delete r;
+			bool valid = false;
+			int interval = 50;
+			if (params.length() > 0)
+			{
+				int max_try = 100000;
+				if (params.length() > 1)
+					max_try = ParseInt(params.substr(1));
+
+				if (params.at(0) == 'W') {
+					
+					do {
+						valid = AreaWhite();
+						cout << "AreaWhite valid=" << valid << " Left=" << max_try << endl;
+						max_try--;
+						Sleep(interval);
+
+					} while (!valid && max_try > 0);
+				}
+				if (params.at(0) == 'B') {
+					do {
+						valid = AreaBlack();
+						cout << "AreaWhite valid=" << valid << " Left=" << max_try << endl;
+						max_try--;
+						Sleep(interval);
+					} while (!valid && max_try > 0);
+				}
+			}
 			break;
 		}
 		break;
@@ -137,6 +270,32 @@ int SimulateCMDs::ParseCMDs(string str)
 	
 	return 0;
 }
+
+//
+//int SimulateCMDs::ParseCMDs(string str)
+//{
+//	str = str.append(" ");
+//	const char * chrs = str.c_str();
+//	INT Length = str.length();
+//	INT i = 0;
+//	INT j = 0;
+//	while (i < Length)
+//	{
+//		while (chrs[i] == ' ') i++;
+//		j = i;
+//		if (j >= Length)
+//			break;
+//
+//		while (chrs[j] != ' ') j++;
+//		string p = str.substr(i, j - i);
+//		// p = p.append('\0');
+//		CMDList.push_back(p);
+//		i = j;
+//		i++;
+//	}
+//
+//	return 0;
+//}
 
 int SimulateCMDs::Process_I(string params)
 {

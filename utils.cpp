@@ -7,6 +7,9 @@
 #include <map>
 #include <io.h>
 #include <direct.h>
+
+
+
 using namespace std;
 using std::vector;
 using std::string;
@@ -329,6 +332,10 @@ BOOL DoubleEqual(DOUBLE a, DOUBLE b)
 	return 0;
 }
 
+void CuteScreenRect(LPCSTR filename, LPRECT lpRect)
+{
+	ScreenCapture(filename,32, lpRect);
+}
 
 HBITMAP ScreenCapture(LPCSTR filename, WORD BitCount, LPRECT lpRect)
 {
@@ -384,6 +391,8 @@ HBITMAP ScreenCapture(LPCSTR filename, WORD BitCount, LPRECT lpRect)
 	BitBlt(hmemDC, 0, 0, iX, iY, hScreenDC, ixStart, iyStart, SRCCOPY);
 	// 将旧的BITMAP对象选择回内存DC，返回值为被替换的对象，既所截取的位图
 	hBitmap = (HBITMAP)SelectObject(hmemDC, hOldBM);
+
+	//bm.bmBitsPixel
 	if (filename == NULL)
 	{
 		DeleteDC(hScreenDC);
