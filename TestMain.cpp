@@ -10,19 +10,21 @@
 #include "KSTreeNode.h"
 
 
-int main()
+int main(int argc, CHAR * argv[])
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	setlocale(LC_ALL, "chs");
      
-	KSTreeNode root;
 
+	KSMain(argc, argv);
+
+	/*KSTreeNode root;
 	KSCommand cmd;
 	cmd.Cmd = "G";
 	cmd.CycleTime = 10;
 	root.AddSub(&cmd);
 
-
+*/
 
 
 	_CrtDumpMemoryLeaks();

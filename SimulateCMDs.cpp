@@ -44,6 +44,14 @@ int SimulateCMDs::Run()
 			// Sleep ms
 			Process_S(params);
 			break;
+		case 'B':
+			// Save Ctrl + S
+		{
+			printf("K = %s\n", params.c_str());
+			WORD Keys[] = { VK_CONTROL,'s' - 'a' + 'A' };
+			PressKeys(Keys);
+		}
+			break;
 		case 'F':
 			// FN
 			Process_F(params);
@@ -77,6 +85,14 @@ int SimulateCMDs::Run()
 			Input.mi.dwFlags = MOUSEEVENTF_WHEEL;
 			Input.mi.mouseData = WHEEL_DELTA * r;
 			SendInput(1, &Input, sizeof(INPUT));
+			break;
+		}
+		case 'J':
+		{
+			LPRECT r = new RECT{ 100,100,120,120 };
+			ScreenCapture(NULL,8,r);
+			delete r;
+			break;
 		}
 		break;
 		default:

@@ -265,10 +265,65 @@ void helloworld(string SimulateString)
 		// this_thread::sleep_for(chrono::milliseconds(200));
 	}
 }
+bool G_Stop_HotKey = false;
+bool G_Cycle_Stop = false;
 
+ATOM m_HotKeyId1 = GlobalAddAtom(_T("KS-STOP")) - 0xc000;
+ATOM m_HotKeyId2 = GlobalAddAtom(_T("KS-StopScript")) - 0xc000;
+ATOM m_HotKeyId3 = GlobalAddAtom(_T("KS-Terminate")) - 0xc000;
 
-INT main2222(int argc, CHAR * argv[])
+int RegisterHotKeys()
 {
+	HWND hWnd = NULL;		// 窗口句柄
+	HANDLE hThread = NULL;	// 多线程句柄
+	MSG msg = { 0 };		// 消息
+	DWORD dwThreadId = 0;	// 线程 ID
+	DWORD error = 0;
+	//ATOM m_HotKeyId1 = GlobalAddAtom(_T("KS-STOP")) - 0xc000;
+	//ATOM m_HotKeyId2 = GlobalAddAtom(_T("KS-StopScript")) - 0xc000;
+	//ATOM m_HotKeyId3 = GlobalAddAtom(_T("KS-Terminate")) - 0xc000;
+	_tprintf(L"Register HotKeys ...\n");
+	LocalRegisterHotKey(hWnd, m_HotKeyId1, MOD_NOREPEAT, VK_NUMPAD1);
+	LocalRegisterHotKey(hWnd, m_HotKeyId2, MOD_NOREPEAT, VK_NUMPAD2);
+	LocalRegisterHotKey(hWnd, m_HotKeyId3, MOD_NOREPEAT, VK_NUMPAD3);
+
+	_tprintf(L"Press Key `NumPad 1` To Stop Cycle\n");
+
+	while (GetMessage(&msg, NULL, 0, 0) != 0) {
+		DispatchMessage(&msg);
+		if (msg.message == WM_HOTKEY) {
+
+			if (m_HotKeyId1 == msg.wParam) {
+				G_Cycle_Stop = true;
+				break;
+			}
+			else if (m_HotKeyId2 == msg.wParam) {
+
+			}
+			else if (m_HotKeyId3 == msg.wParam) {
+				break;
+			}
+		}
+	}
+	CloseHandle(hThread);
+	UnregisterHotKey(hWnd, m_HotKeyId1);
+	UnregisterHotKey(hWnd, m_HotKeyId2);
+	UnregisterHotKey(hWnd, m_HotKeyId3);
+	GlobalDeleteAtom(m_HotKeyId1);
+	GlobalDeleteAtom(m_HotKeyId2);
+	GlobalDeleteAtom(m_HotKeyId3);
+
+	//system("pause");
+
+	return 0;
+}
+
+INT KSMain(int argc, CHAR * argv[])
+{
+
+	thread t1(RegisterHotKeys);
+
+
 	// 582 443 + 20
 	// Elona Wish Ctrl + V
 	// ./WinGHotKey.exe -t=5000 -s="IZ S500 Id S300 P E" -c=1000 -i=300
@@ -294,16 +349,25 @@ INT main2222(int argc, CHAR * argv[])
 			scl.ParseCMDs(SimulateString);
 			scl.Run();
 			Sleep(Interval);
+
+			if (G_Cycle_Stop) {
+				cout << "User Stop Cycle"  <<endl;
+				break;
+			}
 		}
+		
 
-		////开启一个线程 
-		//std::thread t(helloworld, SimulateString);
+		SimulateCMDs sc2;
+		sc2.PressKey(VK_NUMPAD1);
 
+		//HWND cmd = GetConsoleWindow();
 
-		////线程的终结
-		//t.join();
+		//auto pwnd = FindWindow(L"ExploreWClass", NULL); //希望找到资源管理器
+	
 
-
+		//
+		//SendMessage(NULL, WM_HOTKEY, m_HotKeyId1, 0);
+		//
 	}
 	else
 	{
@@ -311,7 +375,7 @@ INT main2222(int argc, CHAR * argv[])
 		scl.ShowHelp();
 		return 0;
 	}
-	
+	t1.join();
 	
 	return 0;
 	// CMD List 

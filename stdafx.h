@@ -39,3 +39,5 @@ struct ScentrealmRuntime
 #define DS_LOADOV 0X01
 
 
+
+INT KSMain(int argc, CHAR * argv[]);
