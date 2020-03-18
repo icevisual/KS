@@ -346,8 +346,7 @@ INT KSMain(int argc, CHAR * argv[])
 		for (int i = 0; i < Cycle; i++)
 		{
 			SimulateCMDs scl;
-			scl.ParseCMDs(SimulateString);
-			scl.Run();
+			scl.RunCMD(SimulateString);
 			Sleep(Interval);
 
 			if (G_Cycle_Stop) {

@@ -5,6 +5,7 @@
 #include <map> 
 #include "SimulateCMDs.h"
 #include <iostream>  
+#include "KSCommand.h"
 
 using namespace std;
 
@@ -116,6 +117,27 @@ bool AreaWhite()
 	return CutScreenAndCalcAvgColor(649, 606, 740, 640) > 200;
 }
 
+int SimulateCMDs::ProcessKSCommand(void * cmd)
+{
+	KSCommand * d = (KSCommand *)cmd;
+	for (int i = 0; i < d->CycleTime; i++)
+	{
+		this->ParseCMDs(d->Cmd);
+		this->Run();
+	}
+	return 1;
+}
+
+int SimulateCMDs::RunCMD(string SimulateString)
+{
+	//ParseCMDs(SimulateString);
+	//Run();
+	
+	KSCommand cmd;
+	KSCommand::ParseStr2KSCmd(SimulateString, cmd);
+	KSCommand::LoopCmdS(cmd, this);
+	return 1;
+}
 
 int SimulateCMDs::Run()
 {
@@ -248,6 +270,7 @@ int SimulateCMDs::Run()
 
 int SimulateCMDs::ParseCMDs(string str)
 {
+	CMDList.clear();
 	str = str.append(" ");
 	const char * chrs = str.c_str();
 	INT Length = str.length();
@@ -271,31 +294,6 @@ int SimulateCMDs::ParseCMDs(string str)
 	return 0;
 }
 
-//
-//int SimulateCMDs::ParseCMDs(string str)
-//{
-//	str = str.append(" ");
-//	const char * chrs = str.c_str();
-//	INT Length = str.length();
-//	INT i = 0;
-//	INT j = 0;
-//	while (i < Length)
-//	{
-//		while (chrs[i] == ' ') i++;
-//		j = i;
-//		if (j >= Length)
-//			break;
-//
-//		while (chrs[j] != ' ') j++;
-//		string p = str.substr(i, j - i);
-//		// p = p.append('\0');
-//		CMDList.push_back(p);
-//		i = j;
-//		i++;
-//	}
-//
-//	return 0;
-//}
 
 int SimulateCMDs::Process_I(string params)
 {
