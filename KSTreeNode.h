@@ -6,9 +6,6 @@
 #include <string>
 using namespace std;
 
-typedef int(*cmd_callback)(KSCommand str);
-
-
 class KSCommand
 {
 public:
@@ -21,12 +18,15 @@ public:
 	int CycleTime = 1;
 	// ´¥·¢Ìõ¼þ
 	string Condition;
-
+	typedef int(*cmd_callback)(KSCommand str);
 public:
 	static int GetSubSeg(string str, vector<string> &sub, int &count);
 	static void ParseStr2KSCmd(string str, KSCommand &cmd);
-	void LoopCmd(KSCommand cmd, cmd_callback callback)
+	static void LoopCmd(KSCommand cmd, cmd_callback callback);
 };
+
+
+
 
 
 
