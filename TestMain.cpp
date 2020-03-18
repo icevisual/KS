@@ -56,9 +56,8 @@ int GetSub(string str,string &sub,int &count)
 	return hasSub ? 1:0;
 }
 
-
-
-
+// 解析带括号的指令字符串，存到 sub 中，第一行为 括号前，第二行括号内，第三行括号后，无内容填入 空字符串
+// 返回是否有子项，1 有子项，0 没有，-1 格式错误
 int GetSubSeg(string str, vector<string> &sub, int &count)
 {
 	INT Length = str.length();
@@ -84,7 +83,7 @@ int GetSubSeg(string str, vector<string> &sub, int &count)
 				hasSub = true;
 
 				if (j > 0) {
-					sub.push_back(str.substr(0, j));
+					sub.push_back(str.substr(0, j - 1));
 				}
 				else {
 					sub.push_back("");
@@ -118,67 +117,68 @@ int GetSubSeg(string str, vector<string> &sub, int &count)
 	count = s;
 	return hasSub ? 1 : 0;
 }
-int ParseCMDs1(string str)
+
+// 递归调用 GetSubSeg ，将指令存入 KSCommand
+void ParseStr2KSCmd(string str, KSCommand &cmd)
 {
-	string str = "  {S1000 B S500 JW {E}20 JB S100 GW S400 MM+0,20 S100}10  ";
 	vector<string> sub;
 	int count = 0;
 	int r = 0;
 	r = GetSubSeg(str, sub, count);
-
 	if (r == 0)
 	{
 		// no {
+		cmd.Cmd = str;
 	}
 	else
 	{
-
-	}
-
-
-	for (int i = 0; i < sub.size(); i++)
-	{
-		cout << sub[i] << endl;
-	}
-	cout << count << endl;
-}
-
-int ParseCMDs(string str)
-{
-	str = str.append(" ");
-	const char * chrs = str.c_str();
-	INT Length = str.length();
-	INT i = 0;
-	INT j = 0;
-
-	vector<KSCommand> CMD;
-
-	while (i < Length)
-	{
-		KSCommand c;
-		while (chrs[i] == ' ') i++;
-		j = i;
-		if (j >= Length)
-			break;
-
-		if (chrs[j] == '{')
+		cmd.HasSubCmds = true;
+		if (sub[0].length() > 0)
 		{
-
+			KSCommand tmp;
+			tmp.Cmd = sub[0];
+			cmd.SubCmds.push_back(tmp);
 		}
 
-		while (chrs[j] != ' ') j++;
-		string p = str.substr(i, j - i);
-		// p = p.append('\0');
-		
-		c.Cmd = p;
-		CMD.push_back(c);
-		i = j;
-		i++;
-	}
+		KSCommand tmp1;
+		tmp1.CycleTime = count;
 
-	return 0;
+		ParseStr2KSCmd(sub[1], tmp1);
+		cmd.SubCmds.push_back(tmp1);
+		if (sub[2].length() > 0)
+		{
+			KSCommand tmp;
+			tmp.Cmd = sub[2];
+			cmd.SubCmds.push_back(tmp);
+		}
+	}
 }
 
+typedef int(*cmd_callback)(KSCommand str);
+
+int show_cmd(KSCommand cmd)
+{
+	cout << cmd.Cmd << " * " << cmd.CycleTime << endl;
+	return 1;
+}
+
+// 带回调函数的遍历 KSCommand
+void LoopCmd(KSCommand cmd, cmd_callback callback)
+{
+	if (cmd.HasSubCmds)
+	{
+		for (int j = 0; j < cmd.CycleTime; j++)
+		{
+			for (int i = 0; i < cmd.SubCmds.size(); i++) {
+				LoopCmd(cmd.SubCmds[i], callback);
+			}
+		}
+	}
+	else
+	{
+		cout << cmd.Cmd << " * "<< cmd.CycleTime << endl;
+	}
+}
 
 int main(int argc, CHAR * argv[])
 {
@@ -194,15 +194,10 @@ int main(int argc, CHAR * argv[])
 
 	string str = "  {S1000 B S500 JW {E}20 JB S100 GW S400 MM+0,20 S100}10  ";
 
+	KSCommand cmd;
+	ParseStr2KSCmd(str1,cmd);
 
-	GetSubSeg(str, sub, count);
-
-
-	for (int i = 0; i < sub.size(); i++)
-	{
-		cout << sub[i] << endl;
-	}
-	cout << count << endl;
+	LoopCmd(cmd, show_cmd);
 
 	//KSMain(argc, argv);
 
