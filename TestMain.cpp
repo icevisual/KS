@@ -9,7 +9,7 @@
 
 
 
-int main()
+int main2222()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	setlocale(LC_ALL, "chs");
@@ -17,5 +17,6 @@ int main()
 
 	_CrtDumpMemoryLeaks();
 	system("pause");
+	return 0;
 }
 

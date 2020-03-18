@@ -11,7 +11,8 @@
 #include <io.h>
 #include <direct.h>
 
-
+#include <thread>
+#include <future>
 
 #include<math.h>
 #include<windows.h>
@@ -245,27 +246,30 @@ VOID DrawC(int x0,int y0,int r)
 }
 
 
-INT main0(int argc, CHAR * argv[])
+void helloworld1(string SimulateString)
 {
-	////GetMousePosition();
-	////return 0;
-	//
-	////vector<POINT> R;
-	////CalcColorPoint(R);
-	//Sleep(7000);
-	//DrawFFF();
-	//return 0;
- //   ResetCanvas();
-	//Sleep(100);
+	SimulateCMDs scl;
+	scl.ParseCMDs(SimulateString);
+	scl.Run();
+}
 
 
-	//for (int i = 0; i < 20; i++)
-	//{
-	//	DrawC(200 + i * 6, 500, 30 + i * 5);
+void helloworld(string SimulateString)
+{
+	for (int i = 0; i < 1000; i++)
+	{
+		SimulateCMDs scl;
+		scl.ParseCMDs(SimulateString);
+		scl.Run();
+		Sleep(200);
+		// this_thread::sleep_for(chrono::milliseconds(200));
+	}
+}
 
-	//}
 
-	//return 0;
+INT main(int argc, CHAR * argv[])
+{
+	// 582 443 + 20
 	// Elona Wish Ctrl + V
 	// ./WinGHotKey.exe -t=5000 -s="IZ S500 Id S300 P E" -c=1000 -i=300
 	// ./WinGHotKey.exe -t=5000 -s="{IZ S500 Id S300 P {E}2}2" -c=1000 -i=300
@@ -291,6 +295,15 @@ INT main0(int argc, CHAR * argv[])
 			scl.Run();
 			Sleep(Interval);
 		}
+
+		////开启一个线程 
+		//std::thread t(helloworld, SimulateString);
+
+
+		////线程的终结
+		//t.join();
+
+
 	}
 	else
 	{

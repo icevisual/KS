@@ -21,7 +21,8 @@ int SimulateCMDs::Run()
 		case 'G':
 			POINT p;
 			GetCursorPos(&p);
-			printf("(%d,%d)\n", p.x, p.y);
+			// printf("(%d,%d)\n", p.x, p.y);
+			cout << "(" << p.x << "," << p.y << ")" << endl;
 			break;
 		case 'K':
 			Process_K(params);
@@ -51,6 +52,23 @@ int SimulateCMDs::Run()
 		case 'L':
 			Process_L(params);
 			break;
+		case 'H':
+			
+			break;
+		case 'W':
+		{
+			printf("S = %s\n", params.c_str());
+			INT r = ParseInt(params);
+			printf("wwwww\n");
+			INPUT Input = { 0 };
+			Input.type = INPUT_MOUSE;
+			Input.mi.dwFlags = MOUSEEVENTF_WHEEL;
+			Input.mi.mouseData = r;
+			SendInput(1, &Input, sizeof(INPUT));
+		}
+
+		// mouse_event(MOUSEEVENTF_WHEEL, 0, 10, WHEEL_DELTA * 10, 0);
+		break;
 		default:
 			break;
 		}
@@ -302,6 +320,25 @@ int SimulateCMDs::Process_M(string params)
 				break;
 			}
 		break;
+	case 'D':
+		switch (params.at(1))
+		{
+		case 'L':
+			MLC(); 
+			Sleep(30);
+			MLC();
+			break;
+		case 'R':
+			MRC(); MRC();
+			break;
+		case 'M':
+			MMC(); MMC();
+			break;
+
+		default:
+			break;
+		}
+		break;
 	case 'A':
 		switch (params.at(1))
 		{
@@ -321,8 +358,25 @@ int SimulateCMDs::Process_M(string params)
 	case 'M':
 		x = 0;
 		y = 0;
-		ParseIntPair(params.substr(1),&x,&y);
-		MV(x, y);
+		if (params.at(1) == '+') {
+			POINT p;
+			GetCursorPos(&p);
+			ParseIntPair(params.substr(2), &x, &y);
+			MV(p.x +x, p.y + y);
+			cout << "(" << p.x + x << "," << p.y + y << ")" << endl;
+		}
+		else if (params.at(1) == '+') {
+			POINT p;
+			GetCursorPos(&p);
+			ParseIntPair(params.substr(2), &x, &y);
+			MV(p.x - x, p.y - y); cout << "(" << p.x + x << "," << p.y + y << ")" << endl;
+		}
+		else {
+			ParseIntPair(params.substr(1), &x, &y);
+			MV(x, y);
+		}
+
+		
 
 		break;
 	case 'S':
@@ -331,6 +385,7 @@ int SimulateCMDs::Process_M(string params)
 		ParseIntPair(params.substr(1), &x, &y);
 		MV2(x, y);
 		break;
+
 	default:
 		break;
 	}
@@ -382,7 +437,7 @@ void SingleKeyDown(DWORD KeyCode)
 	INPUT Input = { 0 };
 	// left down
 	Input.type = INPUT_MOUSE;
-	Input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+	Input.mi.dwFlags = KeyCode;
 	SendInput(1, &Input, sizeof(INPUT));
 }
 
@@ -413,7 +468,7 @@ void SimulateCMDs::MMU()
 	SingleKeyDown(MOUSEEVENTF_MIDDLEUP);
 
 
-
+	// MOUSEEVENTF_WHEEL
 }
 
 void SimulateCMDs::MV(int dx, int dy)
