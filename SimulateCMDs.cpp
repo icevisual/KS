@@ -412,6 +412,11 @@ int SimulateCMDs::Process_M(string params)
 	//  按下、弹起 MALD|MALU|MARD|MARU
 	//  移动 到    MM100,200
 	//  设置 坐标  MS100,200
+
+
+	static int last_x = -1;
+	static int last_y = -1;
+
 	printf("M = %s\n", params.c_str());
 	int x = 0, y = 0;
 	auto p1 = params.at(0);
@@ -472,26 +477,32 @@ int SimulateCMDs::Process_M(string params)
 	case 'M':
 		x = 0;
 		y = 0;
-		if (params.at(1) == '+') {
-			POINT p;
-			GetCursorPos(&p);
+		if (params.at(1) == '+' || params.at(1) == '-' ) {
+			int f = params.at(1) == '-' ? -1 :1;
+			int new_x = last_x;
+			int new_y = last_y;
 			ParseIntPair(params.substr(2), &x, &y);
-			MV(p.x +x, p.y + y);
-			cout << "(" << p.x + x << "," << p.y + y << ")" << endl;
-		}
-		else if (params.at(1) == '+') {
-			POINT p;
-			GetCursorPos(&p);
-			ParseIntPair(params.substr(2), &x, &y);
-			MV(p.x - x, p.y - y); cout << "(" << p.x + x << "," << p.y + y << ")" << endl;
+			if (last_x < 0 || last_y < 0)
+			{
+				POINT p;
+				GetCursorPos(&p);
+				ParseIntPair(params.substr(2), &x, &y);
+				last_x = p.x;
+				last_y = p.y;
+			}
+			new_x = last_x + f * x;
+			new_y = last_y + f * y;
+			MV(new_x, new_y);
+			cout << "(" << new_x << "," << new_y << ")" << endl;
+			last_x = new_x;
+			last_y = new_y;
 		}
 		else {
 			ParseIntPair(params.substr(1), &x, &y);
 			MV(x, y);
+			last_x = x;
+			last_y = y;
 		}
-
-		
-
 		break;
 	case 'S':
 		x = 0;
