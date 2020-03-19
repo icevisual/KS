@@ -541,7 +541,7 @@ WORD ConvertChar2KeyWordAndSimulate(string str)
 			{ '%',0x35 } ,{ '^',0x36 } ,{ '&',0x37 } ,{ '*',0x38 } ,{ '(',0x39 } ,
 			{ '~',VK_OEM_3 } ,{ '_',VK_OEM_MINUS },
 			{ '{',VK_OEM_4 } ,{ '}',VK_OEM_6 },{ '|',VK_OEM_5 } ,
-			{ ':',VK_OEM_1 } ,{ '"',VK_OEM_7 },
+			{ ':',VK_OEM_1 } ,{ '"',VK_OEM_7 },{26,VK_RIGHT } ,
 			{ '<',VK_OEM_COMMA } ,{ '?',VK_OEM_2 } ,
 			{ '>',VK_OEM_PERIOD }
 		};

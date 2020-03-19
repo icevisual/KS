@@ -267,45 +267,115 @@ void helloworld(string SimulateString)
 bool G_Stop_HotKey = false;
 bool G_Cycle_Stop = false;
 
-ATOM m_HotKeyId1 = GlobalAddAtom(_T("KS-STOP")) - 0xc000;
-ATOM m_HotKeyId2 = GlobalAddAtom(_T("KS-StopScript")) - 0xc000;
-ATOM m_HotKeyId3 = GlobalAddAtom(_T("KS-Terminate")) - 0xc000;
+
+
+bool SaveClipboard2File()
+{
+	BOOL b1 = IsClipboardFormatAvailable(CF_TEXT);
+	BOOL b2 = OpenClipboard(NULL);
+
+	printf("IsClipboardFormatAvailable = %d,OpenClipboard = %d\n", b1, b2);
+	if (b1 && b2)//打开剪贴板  
+	{
+		string str;
+		HANDLE hClip;
+		char* pBuf;
+		LPTSTR    lptstr;
+		HGLOBAL   hglb;
+		hglb = GetClipboardData(CF_TEXT);
+		if (hglb != NULL)
+		{
+			//lptstr = (LPTSTR) GlobalLock(hglb);
+			pBuf = (char*)GlobalLock(hglb);
+			if (pBuf != NULL)
+			{
+				printf("pBuf = %s\n", pBuf);
+
+				FILE* fp;
+				errno_t error = fopen_s(&fp, "C:\\Users\\Administrator\\Desktop\\link.txt", "a+");
+				if (error == 0) {
+					string str(pBuf);
+					str += "\n";
+					fwrite(str.c_str(), sizeof(char), str.length(), fp);
+					fclose(fp);
+				}
+				else {
+					printf("Open File Failed\n");
+				}
+
+				GlobalUnlock(hglb);
+				//EmptyClipboard();
+			}
+			else
+			{
+				printf("pBuf is NULL\n");
+			}
+		}
+		else
+		{
+			printf("hglb is NULL\n");
+		}
+
+	}
+	CloseClipboard();
+	return b1 && b2;
+}
+
+
 
 int RegisterHotKeys()
 {
 	HWND hWnd = NULL;		// 窗口句柄
-	HANDLE hThread = NULL;	// 多线程句柄
 	MSG msg = { 0 };		// 消息
 	DWORD dwThreadId = 0;	// 线程 ID
 	DWORD error = 0;
-	//ATOM m_HotKeyId1 = GlobalAddAtom(_T("KS-STOP")) - 0xc000;
-	//ATOM m_HotKeyId2 = GlobalAddAtom(_T("KS-StopScript")) - 0xc000;
-	//ATOM m_HotKeyId3 = GlobalAddAtom(_T("KS-Terminate")) - 0xc000;
+	ATOM m_HotKeyId1 = GlobalAddAtom(_T("KS-STOP")) - 0xc000;
+	ATOM m_HotKeyId2 = GlobalAddAtom(_T("KS-StopScript")) - 0xc000;
+	ATOM m_HotKeyId3 = GlobalAddAtom(_T("KS-Terminate")) - 0xc000;
+	ATOM m_HotKeyId4 = GlobalAddAtom(_T("KS-Terminate222")) - 0xc000;
 	_tprintf(L"Register HotKeys ...\n");
 	LocalRegisterHotKey(hWnd, m_HotKeyId1, MOD_NOREPEAT, VK_NUMPAD1);
-	LocalRegisterHotKey(hWnd, m_HotKeyId2, MOD_NOREPEAT, VK_NUMPAD2);
-	LocalRegisterHotKey(hWnd, m_HotKeyId3, MOD_NOREPEAT, VK_NUMPAD3);
+	LocalRegisterHotKey(hWnd, m_HotKeyId2, MOD_NOREPEAT, 0x30 + '1' - '0');
+	LocalRegisterHotKey(hWnd, m_HotKeyId3, MOD_NOREPEAT, 0x30 + '2' - '0');
+	LocalRegisterHotKey(hWnd, m_HotKeyId4, MOD_NOREPEAT, 0x30 + '3' - '0');
 
 	_tprintf(L"Press Key `NumPad 1` To Stop Cycle\n");
-
+	SimulateCMDs scl;
 	while (GetMessage(&msg, NULL, 0, 0) != 0) {
 		DispatchMessage(&msg);
 		if (msg.message == WM_HOTKEY) {
 
 			if (m_HotKeyId1 == msg.wParam) {
 				cout << "User Stopped" << endl;
-				exit(0);
-				break;
+				goto END;
 			}
 			else if (m_HotKeyId2 == msg.wParam) {
+				
+				scl.RunCMD("MCR S100 Io");
+
+				
+				bool r = SaveClipboard2File();
+				if (!r) {
+					scl.RunCMD("MCR S100 Io");
+					printf("====>REDO\n");
+					SaveClipboard2File();
+				}
 
 			}
 			else if (m_HotKeyId3 == msg.wParam) {
-				break;
+				scl.RunCMD("W-3");
+			}
+			else if (m_HotKeyId4 == msg.wParam) {
+				
+
+				WORD wd[1] = {VK_RIGHT};
+				SimulateKeyArrayInput(wd,1);
 			}
 		}
 	}
-	CloseHandle(hThread);
+
+END:
+
 	UnregisterHotKey(hWnd, m_HotKeyId1);
 	UnregisterHotKey(hWnd, m_HotKeyId2);
 	UnregisterHotKey(hWnd, m_HotKeyId3);
@@ -337,6 +407,8 @@ INT KSMain(int argc, CHAR * argv[])
 	INT Cycle = g_argv.GetArgv_INT("c", 1);
 	// 循环间隔 ms
 	INT Interval = g_argv.GetArgv_INT("i", 200);
+	// 循环间隔 ms
+	INT Listen = g_argv.GetArgv_INT("l", 0);
 	// 指令
 	string SimulateString = g_argv.GetArgv_string("s", "");
 	if (SleepMilliSeconds > 0)
@@ -350,10 +422,11 @@ INT KSMain(int argc, CHAR * argv[])
 			Sleep(Interval);
 		}
 		
-
-		SimulateCMDs sc2;
-		sc2.PressKey(VK_NUMPAD1);
-
+		if (Listen == 0)
+		{
+			SimulateCMDs sc2;
+			sc2.PressKey(VK_NUMPAD1);
+		}
 		//HWND cmd = GetConsoleWindow();
 
 		//auto pwnd = FindWindow(L"ExploreWClass", NULL); //希望找到资源管理器
