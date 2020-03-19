@@ -616,29 +616,59 @@ INT IndexOf(CHAR *data, INT length, CHAR chr)
 	return -1;
 }
 
+//
+//
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <io.h>
+//#include <time.h>
+//void t()
+//{
+//	struct _finddata_t c_file;
+//	intptr_t hFile;
+//
+//	// Find first .c file in current directory
+//	if ((hFile = _findfirst("F:\\vlc\\ts\\down\\ff\\*.*", &c_file)) == -1L)
+//		printf("No *.c files in current directory!\n");
+//	else
+//	{
+//		printf("Listing of .c files\n\n");
+//		printf("RDO HID SYS ARC  FILE         DATE %25c SIZE\n", ' ');
+//		printf("--- --- --- ---  ----         ---- %25c ----\n", ' ');
+//		do {
+//			char buffer[30];
+//			printf((c_file.attrib & _A_RDONLY) ? " Y  " : " N  ");
+//			printf((c_file.attrib & _A_HIDDEN) ? " Y  " : " N  ");
+//			printf((c_file.attrib & _A_SYSTEM) ? " Y  " : " N  ");
+//			printf((c_file.attrib & _A_ARCH) ? " Y  " : " N  ");
+//			ctime_s(buffer, _countof(buffer), &c_file.time_write);
+//			printf(" %-12s %.24s  %9ld\n",
+//				c_file.name, buffer, c_file.size);
+//		} while (_findnext(hFile, &c_file) == 0);
+//		_findclose(hFile);
+//	}
+//}
+
+
+
 // List Files With Extension No Deep Search
 INT ListFilesWithExt_NDP(const string& folder_path, vector<string> &result_vector, string Ext)
 {
 	result_vector.clear();
 	_finddata_t file;
-	long flag;
+	intptr_t flag;
 	string filename = folder_path + "\\*" + Ext;//遍历制定文件夹内的jpg文件
-	if ((flag = _findfirst(filename.c_str(), &file)) == -1)//目录内找不到文件
+	if ((flag = _findfirst(filename.c_str(), &file)) == -1L)//目录内找不到文件
 	{
 		cout << "There is no such type file" << endl;
 		return -1;
 	}
 	else
 	{
-		//通过前面的_findfirst找到第一个文件
-		string name = folder_path + "\\" + file.name;//file.name存放的是遍历得到的文件名
-		result_vector.push_back(name);
-		//依次寻找以后的文件
-		while (_findnext(flag, &file) == 0)
-		{
+		do {
 			string name = string(folder_path + "\\" + string(file.name));
 			result_vector.push_back(name);
-		}
+		} while (_findnext(flag, &file) == 0);
 	}
 	_findclose(flag);
 	return 1;
