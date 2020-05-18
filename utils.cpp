@@ -7,7 +7,7 @@
 #include <map>
 #include <io.h>
 #include <direct.h>
-
+#include <regex>
 
 
 using namespace std;
@@ -752,4 +752,28 @@ char* wideCharToMultiByte(wchar_t* pWCStrKey)
 
 	//如果想要转换成string，直接赋值即可
 	//string pKey = pCStrKey;
+}
+
+
+errno_t file_append_content(string filename, string content)
+{
+	FILE* fp;
+	errno_t error = fopen_s(&fp, filename.c_str(), "a+");
+	if (error == 0) {
+		fwrite(content.c_str(), sizeof(char), content.length(), fp);
+		fclose(fp);
+	}
+	return error;
+}
+bool is_url(string url)
+{
+	regex reg("(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");
+	return regex_match(url,reg);
+}
+
+void ClearClipboard()
+{
+	OpenClipboard(NULL);
+	EmptyClipboard();
+	CloseClipboard();
 }

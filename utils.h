@@ -94,9 +94,11 @@ int DOMatch(string img_name, string templ_name);
 
 string FileDigest(const string &file);
 
+errno_t file_append_content(string filename, string content);
 
+bool is_url(string url);
 
-
+void ClearClipboard();
 VOID LeftClick();
 VOID LeftClick_Hold();
 VOID LeftClick_Release();

@@ -26,17 +26,17 @@ int main(int argc, CHAR * argv[])
 	setlocale(LC_ALL, "chs");
      
 
-	string folder = "F:\\vlc\\ts\\down\\ff";
-	string ext = ".*";
-	vector<string> files;
-	ListFilesWithExt_NDP(folder, files, ext);
+	//string folder = "F:\\vlc\\ts\\down\\ff";
+	//string ext = ".*";
+	//vector<string> files;
+	//ListFilesWithExt_NDP(folder, files, ext);
 
-	for (int i = 0; i < files.size(); i++)
-	{
-		cout << files[i] << endl;
-	}
+	//for (int i = 0; i < files.size(); i++)
+	//{
+	//	cout << files[i] << endl;
+	//}
 
-	//KSMain(argc, argv);
+	KSMain(argc, argv);
 
 
 	_CrtDumpMemoryLeaks();

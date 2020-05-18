@@ -10,7 +10,7 @@
 #include <map>
 #include <io.h>
 #include <direct.h>
-
+#include <regex>
 #include <thread>
 #include <future>
 #include<math.h>
@@ -269,11 +269,11 @@ bool G_Cycle_Stop = false;
 
 
 
-bool SaveClipboard2File()
+bool SaveClipboard2File2()
 {
 	BOOL b1 = IsClipboardFormatAvailable(CF_TEXT);
 	BOOL b2 = OpenClipboard(NULL);
-
+	
 	printf("IsClipboardFormatAvailable = %d,OpenClipboard = %d\n", b1, b2);
 	if (b1 && b2)//´ò¿ª¼ôÌù°å  
 	{
@@ -296,6 +296,13 @@ bool SaveClipboard2File()
 				if (error == 0) {
 					string str(pBuf);
 					str += "\n";
+
+					regex reg("(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]");
+
+					if (regex_match(str, reg)) {
+						
+					}
+
 					fwrite(str.c_str(), sizeof(char), str.length(), fp);
 					fclose(fp);
 				}
@@ -323,6 +330,59 @@ bool SaveClipboard2File()
 
 
 
+
+bool SaveClipboard2File()
+{
+	BOOL b1 = IsClipboardFormatAvailable(CF_TEXT);
+	BOOL b2 = OpenClipboard(NULL);
+
+	printf("IsClipboardFormatAvailable = %d,OpenClipboard = %d\n", b1, b2);
+	if (b1 && b2)//´ò¿ª¼ôÌù°å  
+	{
+		string str;
+		HANDLE hClip;
+		char* pBuf;
+		LPTSTR    lptstr;
+		HGLOBAL   hglb;
+		hglb = GetClipboardData(CF_TEXT);
+		if (hglb != NULL)
+		{
+			//lptstr = (LPTSTR) GlobalLock(hglb);
+			pBuf = (char*)GlobalLock(hglb);
+			if (pBuf != NULL)
+			{
+				printf("pBuf = %s\n", pBuf);
+				string str(pBuf);
+				
+				if (is_url(str)) {
+					str += "\n";
+					errno_t error = file_append_content("C:\\Users\\Administrator\\Desktop\\link.txt",str);
+					if (error != 0) {
+						printf("Open File Failed\n");
+					}
+				}
+				else {
+					printf("pBuf is not url\n");
+				}
+				GlobalUnlock(hglb);
+				//EmptyClipboard();
+			}
+			else
+			{
+				printf("pBuf is NULL\n");
+			}
+		}
+		else
+		{
+			printf("hglb is NULL\n");
+		}
+	}
+	CloseClipboard();
+	return b1 && b2;
+}
+
+
+
 int RegisterHotKeys()
 {
 	HWND hWnd = NULL;		// ´°¿Ú¾ä±ú
@@ -338,6 +398,8 @@ int RegisterHotKeys()
 	LocalRegisterHotKey(hWnd, m_HotKeyId2, MOD_NOREPEAT, 0x30 + '1' - '0');
 	LocalRegisterHotKey(hWnd, m_HotKeyId3, MOD_NOREPEAT, 0x30 + '2' - '0');
 	LocalRegisterHotKey(hWnd, m_HotKeyId4, MOD_NOREPEAT, 0x30 + '3' - '0');
+
+	ClearClipboard();
 
 	_tprintf(L"Press Key `NumPad 1` To Stop Cycle\n");
 	SimulateCMDs scl;
