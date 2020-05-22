@@ -245,30 +245,6 @@ VOID DrawC(int x0,int y0,int r)
 }
 
 
-void helloworld1(string SimulateString)
-{
-	SimulateCMDs scl;
-	scl.ParseCMDs(SimulateString);
-	scl.Run();
-}
-
-
-void helloworld(string SimulateString)
-{
-	for (int i = 0; i < 1000; i++)
-	{
-		SimulateCMDs scl;
-		scl.ParseCMDs(SimulateString);
-		scl.Run();
-		Sleep(200);
-		// this_thread::sleep_for(chrono::milliseconds(200));
-	}
-}
-bool G_Stop_HotKey = false;
-bool G_Cycle_Stop = false;
-
-
-
 typedef void(*VoidMapStringIntDelegate)(map<string, int> returnMap);
 typedef void(*VoidNoParamsDelegate)();
 
