@@ -22,7 +22,7 @@ using std::string;
 using namespace std;
 
 static FileConfig g_argv;
-
+string OutputFile = "";
 DWORD WINAPI ThreadFunction(LPVOID lpParam)
 {
 	
@@ -382,6 +382,51 @@ bool SaveClipboard2File()
 }
 
 
+bool SaveClipboardContent2File(string filename)
+{
+	BOOL b1 = IsClipboardFormatAvailable(CF_TEXT);
+	BOOL b2 = OpenClipboard(NULL);
+
+	printf("IsClipboardFormatAvailable = %d,OpenClipboard = %d\n", b1, b2);
+	if (b1 && b2)//打开剪贴板  
+	{
+		string str;
+		HANDLE hClip;
+		char* pBuf;
+		LPTSTR    lptstr;
+		HGLOBAL   hglb;
+		hglb = GetClipboardData(CF_TEXT);
+		if (hglb != NULL)
+		{
+			//lptstr = (LPTSTR) GlobalLock(hglb);
+			pBuf = (char*)GlobalLock(hglb);
+			if (pBuf != NULL)
+			{
+				printf("pBuf = %s\n", pBuf);
+				string str(pBuf);
+
+				str += "\n";
+				errno_t error = file_append_content(filename, str);
+				if (error != 0) {
+					printf("Open File Failed\n");
+				}
+
+				GlobalUnlock(hglb);
+				EmptyClipboard();
+			}
+			else
+			{
+				printf("pBuf is NULL\n");
+			}
+		}
+		else
+		{
+			printf("hglb is NULL\n");
+		}
+	}
+	CloseClipboard();
+	return b1 && b2;
+}
 
 int RegisterHotKeys()
 {
@@ -413,16 +458,26 @@ int RegisterHotKeys()
 			}
 			else if (m_HotKeyId2 == msg.wParam) {
 				
+
+
+				// For Image Right Click
 				scl.RunCMD("MCR S100 Io");
 
-				
 				bool r = SaveClipboard2File();
 				if (!r) {
 					scl.RunCMD("MCR S100 Io");
 					printf("====>REDO\n");
 					SaveClipboard2File();
 				}
+				/*string cmd = "MCR S200 G MM+10,10 MCL";
+				scl.RunCMD(cmd);
 
+				bool r = SaveClipboardContent2File(OutputFile);
+				if (!r) {
+					scl.RunCMD(cmd);
+					printf("====>REDO\n");
+					SaveClipboardContent2File(OutputFile);
+				}*/
 			}
 			else if (m_HotKeyId3 == msg.wParam) {
 				scl.RunCMD("W-3");
@@ -473,6 +528,10 @@ INT KSMain(int argc, CHAR * argv[])
 	INT Listen = g_argv.GetArgv_INT("l", 0);
 	// 指令
 	string SimulateString = g_argv.GetArgv_string("s", "");
+
+	// 指令
+	OutputFile = g_argv.GetArgv_string("o", "");
+
 	if (SleepMilliSeconds > 0)
 		Sleep(SleepMilliSeconds);
 	if (SimulateString.length() > 0)

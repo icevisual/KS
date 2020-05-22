@@ -137,6 +137,8 @@ int SimulateCMDs::RunCMD(string SimulateString)
 	KSCommand::LoopCmdS(cmd, this);
 	return 1;
 }
+static int last_x = -1;
+static int last_y = -1;
 
 int SimulateCMDs::Run()
 {
@@ -165,6 +167,8 @@ int SimulateCMDs::Run()
 			GetCursorPos(&p);
 			// printf("(%d,%d)\n", p.x, p.y);
 			cout << "(" << p.x << "," << p.y << ")" << endl;
+			last_x = p.x;
+			last_y = p.y;
 			break;
 		case 'K':
 			// Alt + F4
@@ -173,6 +177,7 @@ int SimulateCMDs::Run()
 		case 'I':
 			// Input str
 			Process_I(params);
+			break;
 		case 'C':
 			// Ctrl + C
 			Process_C(params);
@@ -414,8 +419,7 @@ int SimulateCMDs::Process_M(string params)
 	//  ÉèÖÃ ×ø±ê  MS100,200
 
 
-	static int last_x = -1;
-	static int last_y = -1;
+
 
 	printf("M = %s\n", params.c_str());
 	int x = 0, y = 0;
