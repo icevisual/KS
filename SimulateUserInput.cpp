@@ -20,7 +20,7 @@ using std::vector;
 using std::string;
 
 using namespace std;
-
+USING_DEBUG_LOG_VARS
 static FileConfig g_argv;
 string OutputFile = "";
 DWORD WINAPI ThreadFunction(LPVOID lpParam)
@@ -440,6 +440,86 @@ bool SaveClipboardContent2File(string filename)
 typedef void(*VoidMapStringIntDelegate)(map<string, int> returnMap);
 typedef void(*VoidNoParamsDelegate)();
 
+typedef bool(*BoolStringDelegate)(string str);
+typedef void(*VoidRefStringDelegate)(string &str);
+
+
+bool SaveClipboardContent2File_Common(string filename, BoolStringDelegate Filter = NULL, VoidRefStringDelegate Process = NULL)
+{
+	BOOL b1 = IsClipboardFormatAvailable(CF_TEXT);
+	BOOL b2 = OpenClipboard(NULL);
+
+	printf("IsClipboardFormatAvailable = %d,OpenClipboard = %d\n", b1, b2);
+	if (b1 && b2)//´ò¿ª¼ôÌù°å  
+	{
+		string str;
+		HANDLE hClip;
+		char* pBuf;
+		LPTSTR    lptstr;
+		HGLOBAL   hglb;
+		hglb = GetClipboardData(CF_TEXT);
+		if (hglb != NULL)
+		{
+			//lptstr = (LPTSTR) GlobalLock(hglb);
+			pBuf = (char*)GlobalLock(hglb);
+			if (pBuf != NULL)
+			{
+				printf("pBuf = %s\n", pBuf);
+				string str(pBuf);
+
+				if ( (Filter && Filter(str)) || !Filter) {
+					
+					if (Process)
+						Process(str);
+					errno_t error = file_append_content(filename, str);
+					if (error != 0) {
+						printf("Open File Failed\n");
+					}
+				}
+
+				GlobalUnlock(hglb);
+				EmptyClipboard();
+			}
+			else
+			{
+				printf("pBuf is NULL\n");
+			}
+		}
+		else
+		{
+			printf("hglb is NULL\n");
+		}
+	}
+	CloseClipboard();
+	return b1 && b2;
+}
+
+
+bool SaveClipboard2File_Copy(string filename)
+{
+
+	return SaveClipboardContent2File_Common(filename,
+		NULL,
+		[](string &str) {
+			str += "\n\n";
+			size_t pos;
+			while ((pos = str.find("\r\n")) != str.npos)
+			{
+				str = str.replace(str.find("\r\n"), 2, "\n");
+			}
+		}
+	);
+}
+
+
+bool SaveClipboard2File_Image(string filename)
+{
+	return SaveClipboardContent2File_Common(filename,
+		[](string str) -> bool { return is_url(str); },
+		[](string &str) {str += "\n";}
+	);
+}
+
 int RegisterHotKeys_Common(VoidNoParamsDelegate Handle1, VoidNoParamsDelegate Handle2, VoidNoParamsDelegate Handle3)
 {
 	HWND hWnd = NULL;		// ´°¿Ú¾ä±ú
@@ -450,20 +530,22 @@ int RegisterHotKeys_Common(VoidNoParamsDelegate Handle1, VoidNoParamsDelegate Ha
 	ATOM m_HotKeyId2 = GlobalAddAtom(_T("KS-StopScript")) - 0xc000;
 	ATOM m_HotKeyId3 = GlobalAddAtom(_T("KS-Terminate")) - 0xc000;
 	ATOM m_HotKeyId4 = GlobalAddAtom(_T("KS-Terminate222")) - 0xc000;
-	_tprintf(L"Register HotKeys ...\n");
+
 	LocalRegisterHotKey(hWnd, m_HotKeyId1, MOD_NOREPEAT, VK_NUMPAD1);
 	LocalRegisterHotKey(hWnd, m_HotKeyId2, MOD_NOREPEAT, 0x30 + '1' - '0');
 	LocalRegisterHotKey(hWnd, m_HotKeyId3, MOD_NOREPEAT, 0x30 + '2' - '0');
 	LocalRegisterHotKey(hWnd, m_HotKeyId4, MOD_NOREPEAT, 0x30 + '3' - '0');
 
 	ClearClipboard();
-	_tprintf(L"Press Key `NumPad 1` To Stop Cycle\n");
+
+	DEBUG_LOG("Press Key `NumPad 1` To Stop Cycle\n");
+	
 	while (GetMessage(&msg, NULL, 0, 0) != 0) {
 		DispatchMessage(&msg);
 		if (msg.message == WM_HOTKEY) {
 
 			if (m_HotKeyId1 == msg.wParam) {
-				cout << "User Stopped" << endl;
+				DEBUG_LOGN("User Stopped");
 				goto END;
 			}
 			else if (m_HotKeyId2 == msg.wParam) {
@@ -532,7 +614,7 @@ int RegisterHotKeys_Copy()
 		[]() {
 		string cmd = "C";
 		//scl.RunCMD(cmd);
-		SaveClipboardContent2File(OutputFile);
+		SaveClipboard2File_Copy(OutputFile);
 	},
 		[]() {
 		SimulateCMDs scl;
@@ -589,13 +671,13 @@ INT KSMain(int argc, CHAR * argv[])
 		}
 		else if (Listen == "c")
 		{
-			cout << "Hot Keys For Copy" << endl;
+			DEBUG_LOGN("Hot Keys For Copy");
 			thread t1(RegisterHotKeys_Copy);
 			t1.join();
 		}
 		else if (Listen == "i")
 		{
-			cout << "Hot Keys For Image" << endl;
+			DEBUG_LOGN("Hot Keys For Image");
 			thread t1(RegisterHotKeys_Image);
 			t1.join();
 		}
