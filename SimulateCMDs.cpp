@@ -328,6 +328,8 @@ Usage:  \n\
     -c=<n>        Cycle n Times\n\
     -i=<n>        Cycle Wait Interval (ms)\n\
     -s=<str>      Commands\n\
+    -l=[ic]       Register HotKeys For Copy & Image\
+    -o=<filename> Set Output File\
 \n\
   Commands:\n\
     K              Win + F4\n\
@@ -343,7 +345,7 @@ Usage:  \n\
   Parameters for M:\n\
     MC[LMR]          Left|Right|Middle Click\n\
     MA[LMR][DU]      Left|Right|Middle Key Down\\Up\n\
-    MM(x),(y)        Move To Point(x,y)\n\
+    MM[+-](x),(y)        Move To Point(x,y)\n\
     MS(x),(y)        Set Position Point(x,y)\n\n");
 
 	return 0;

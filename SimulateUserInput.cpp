@@ -550,9 +550,6 @@ int RegisterHotKeys_Copy()
 INT KSMain(int argc, CHAR * argv[])
 {
 
-	thread t1(RegisterHotKeys_Copy);
-
-
 	// 582 443 + 20
 	// Elona Wish Ctrl + V
 	// ./WinGHotKey.exe -t=5000 -s="IZ S500 Id S300 P E" -c=1000 -i=300
@@ -567,7 +564,7 @@ INT KSMain(int argc, CHAR * argv[])
 	// 循环间隔 ms
 	INT Interval = g_argv.GetArgv_INT("i", 200);
 	// 循环间隔 ms
-	INT Listen = g_argv.GetArgv_INT("l", 0);
+	string Listen = g_argv.GetArgv_string("l", "");
 	// 指令
 	string SimulateString = g_argv.GetArgv_string("s", "");
 
@@ -585,11 +582,24 @@ INT KSMain(int argc, CHAR * argv[])
 			Sleep(Interval);
 		}
 		
-		if (Listen == 0)
+		if (Listen == "")
 		{
 			SimulateCMDs sc2;
 			sc2.PressKey(VK_NUMPAD1);
 		}
+		else if (Listen == "c")
+		{
+			cout << "Hot Keys For Copy" << endl;
+			thread t1(RegisterHotKeys_Copy);
+			t1.join();
+		}
+		else if (Listen == "i")
+		{
+			cout << "Hot Keys For Image" << endl;
+			thread t1(RegisterHotKeys_Image);
+			t1.join();
+		}
+		
 		//HWND cmd = GetConsoleWindow();
 
 		//auto pwnd = FindWindow(L"ExploreWClass", NULL); //希望找到资源管理器
@@ -605,7 +615,7 @@ INT KSMain(int argc, CHAR * argv[])
 		scl.ShowHelp();
 		return 0;
 	}
-	t1.join();
+	
 	
 	return 0;
 	// CMD List 
