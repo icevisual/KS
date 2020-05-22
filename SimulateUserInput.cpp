@@ -281,7 +281,7 @@ bool SaveClipboardContent2File_Common(string filename, BoolStringDelegate Filter
 	BOOL b1 = IsClipboardFormatAvailable(CF_TEXT);
 	BOOL b2 = OpenClipboard(NULL);
 
-	printf("IsClipboardFormatAvailable = %d,OpenClipboard = %d\n", b1, b2);
+	DEBUG_LOG("IsClipboardFormatAvailable = %d,OpenClipboard = %d\n", b1, b2);
 	if (b1 && b2)//´ò¿ª¼ôÌù°å  
 	{
 		string str;
@@ -296,7 +296,7 @@ bool SaveClipboardContent2File_Common(string filename, BoolStringDelegate Filter
 			pBuf = (char*)GlobalLock(hglb);
 			if (pBuf != NULL)
 			{
-				printf("pBuf = %s\n", pBuf);
+				DEBUG_LOG("pBuf = [[%s]]\n", pBuf);
 				string str(pBuf);
 
 				if ( (Filter && Filter(str)) || !Filter) {
@@ -305,7 +305,7 @@ bool SaveClipboardContent2File_Common(string filename, BoolStringDelegate Filter
 						Process(str);
 					errno_t error = file_append_content(filename, str);
 					if (error != 0) {
-						printf("Open File Failed\n");
+						DEBUG_LOG("Open File Failed\n");
 					}
 				}
 
@@ -314,12 +314,12 @@ bool SaveClipboardContent2File_Common(string filename, BoolStringDelegate Filter
 			}
 			else
 			{
-				printf("pBuf is NULL\n");
+				DEBUG_LOG("pBuf is NULL\n");
 			}
 		}
 		else
 		{
-			printf("hglb is NULL\n");
+			DEBUG_LOG("hglb is NULL\n");
 		}
 	}
 	CloseClipboard();
@@ -422,8 +422,8 @@ int RegisterHotKeys_Image()
 			bool r = SaveClipboard2File_Image(OutputFile);
 			if (!r) {
 				scl.RunCMD("MCR S100 Io");
-				printf("====>REDO\n");
-				SaveClipboard2File();
+				DEBUG_LOG("Retry\n");
+				SaveClipboard2File_Image(OutputFile);
 			}
 		},
 		[]() {
