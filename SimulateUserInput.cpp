@@ -366,6 +366,7 @@ bool SaveClipboard2File()
 				}
 				GlobalUnlock(hglb);
 				//EmptyClipboard();
+				EmptyClipboard();
 			}
 			else
 			{
@@ -405,7 +406,14 @@ bool SaveClipboardContent2File(string filename)
 				printf("pBuf = %s\n", pBuf);
 				string str(pBuf);
 
-				str += "\n";
+				str += "\n\n";
+				size_t pos;
+
+				while ((pos = str.find("\r\n")) != str.npos)
+				{
+					str = str.replace(str.find("\r\n"), 2, "\n");
+				}
+
 				errno_t error = file_append_content(filename, str);
 				if (error != 0) {
 					printf("Open File Failed\n");
@@ -427,6 +435,193 @@ bool SaveClipboardContent2File(string filename)
 	CloseClipboard();
 	return b1 && b2;
 }
+
+
+
+int RegisterHotKeys_Image()
+{
+	HWND hWnd = NULL;		// 窗口句柄
+	MSG msg = { 0 };		// 消息
+	DWORD dwThreadId = 0;	// 线程 ID
+	DWORD error = 0;
+	ATOM m_HotKeyId1 = GlobalAddAtom(_T("KS-STOP")) - 0xc000;
+	ATOM m_HotKeyId2 = GlobalAddAtom(_T("KS-StopScript")) - 0xc000;
+	ATOM m_HotKeyId3 = GlobalAddAtom(_T("KS-Terminate")) - 0xc000;
+	ATOM m_HotKeyId4 = GlobalAddAtom(_T("KS-Terminate222")) - 0xc000;
+	_tprintf(L"Register HotKeys ...\n");
+	LocalRegisterHotKey(hWnd, m_HotKeyId1, MOD_NOREPEAT, VK_NUMPAD1);
+	LocalRegisterHotKey(hWnd, m_HotKeyId2, MOD_NOREPEAT, 0x30 + '1' - '0');
+	LocalRegisterHotKey(hWnd, m_HotKeyId3, MOD_NOREPEAT, 0x30 + '2' - '0');
+	LocalRegisterHotKey(hWnd, m_HotKeyId4, MOD_NOREPEAT, 0x30 + '3' - '0');
+
+	ClearClipboard();
+
+	_tprintf(L"Press Key `NumPad 1` To Stop Cycle\n");
+	SimulateCMDs scl;
+	while (GetMessage(&msg, NULL, 0, 0) != 0) {
+		DispatchMessage(&msg);
+		if (msg.message == WM_HOTKEY) {
+
+			if (m_HotKeyId1 == msg.wParam) {
+				cout << "User Stopped" << endl;
+				goto END;
+			}
+			else if (m_HotKeyId2 == msg.wParam) {
+				// For Image Right Click
+			    scl.RunCMD("MCR S100 Io");
+
+				bool r = SaveClipboard2File();
+				if (!r) {
+					scl.RunCMD("MCR S100 Io");
+					printf("====>REDO\n");
+					SaveClipboard2File();
+				}
+			}
+			else if (m_HotKeyId3 == msg.wParam) {
+
+				scl.RunCMD("W-3");
+			}
+			else if (m_HotKeyId4 == msg.wParam) {
+
+
+				WORD wd[1] = { VK_RIGHT };
+				SimulateKeyArrayInput(wd, 1);
+			}
+		}
+	}
+
+END:
+
+	UnregisterHotKey(hWnd, m_HotKeyId1);
+	UnregisterHotKey(hWnd, m_HotKeyId2);
+	UnregisterHotKey(hWnd, m_HotKeyId3);
+	GlobalDeleteAtom(m_HotKeyId1);
+	GlobalDeleteAtom(m_HotKeyId2);
+	GlobalDeleteAtom(m_HotKeyId3);
+
+	//system("pause");
+
+	return 0;
+}
+
+
+
+typedef void(*VoidMapStringIntDelegate)(map<string, int> returnMap);
+typedef void(*VoidNoParamsDelegate)();
+
+int RegisterHotKeys_Common(VoidNoParamsDelegate Handle1, VoidNoParamsDelegate Handle2, VoidNoParamsDelegate Handle3)
+{
+	HWND hWnd = NULL;		// 窗口句柄
+	MSG msg = { 0 };		// 消息
+	DWORD dwThreadId = 0;	// 线程 ID
+	DWORD error = 0;
+	ATOM m_HotKeyId1 = GlobalAddAtom(_T("KS-STOP")) - 0xc000;
+	ATOM m_HotKeyId2 = GlobalAddAtom(_T("KS-StopScript")) - 0xc000;
+	ATOM m_HotKeyId3 = GlobalAddAtom(_T("KS-Terminate")) - 0xc000;
+	ATOM m_HotKeyId4 = GlobalAddAtom(_T("KS-Terminate222")) - 0xc000;
+	_tprintf(L"Register HotKeys ...\n");
+	LocalRegisterHotKey(hWnd, m_HotKeyId1, MOD_NOREPEAT, VK_NUMPAD1);
+	LocalRegisterHotKey(hWnd, m_HotKeyId2, MOD_NOREPEAT, 0x30 + '1' - '0');
+	LocalRegisterHotKey(hWnd, m_HotKeyId3, MOD_NOREPEAT, 0x30 + '2' - '0');
+	LocalRegisterHotKey(hWnd, m_HotKeyId4, MOD_NOREPEAT, 0x30 + '3' - '0');
+
+	ClearClipboard();
+
+	_tprintf(L"Press Key `NumPad 1` To Stop Cycle\n");
+	SimulateCMDs scl;
+	while (GetMessage(&msg, NULL, 0, 0) != 0) {
+		DispatchMessage(&msg);
+		if (msg.message == WM_HOTKEY) {
+
+			if (m_HotKeyId1 == msg.wParam) {
+				cout << "User Stopped" << endl;
+				goto END;
+			}
+			else if (m_HotKeyId2 == msg.wParam) {
+				if (Handle1)
+					Handle1();
+			}
+			else if (m_HotKeyId3 == msg.wParam) {
+
+				if (Handle2)
+					Handle2();
+			}
+			else if (m_HotKeyId4 == msg.wParam) {
+
+				if (Handle3)
+					Handle3();
+			}
+		}
+	}
+
+END:
+
+	UnregisterHotKey(hWnd, m_HotKeyId1);
+	UnregisterHotKey(hWnd, m_HotKeyId2);
+	UnregisterHotKey(hWnd, m_HotKeyId3);
+	GlobalDeleteAtom(m_HotKeyId1);
+	GlobalDeleteAtom(m_HotKeyId2);
+	GlobalDeleteAtom(m_HotKeyId3);
+
+	//system("pause");
+
+	return 0;
+}
+
+
+
+
+int RegisterHotKeys_Image1()
+{
+	RegisterHotKeys_Common(
+		[]() { 
+			SimulateCMDs scl;
+			// For Image Right Click
+			scl.RunCMD("MCR S100 Io");
+
+			bool r = SaveClipboard2File();
+			if (!r) {
+				scl.RunCMD("MCR S100 Io");
+				printf("====>REDO\n");
+				SaveClipboard2File();
+			}
+		},
+		[]() {
+			SimulateCMDs scl;
+			scl.RunCMD("W-3");
+		},
+		[]() {
+			WORD wd[1] = { VK_RIGHT };
+			SimulateKeyArrayInput(wd, 1);
+		}
+	);
+
+	return 0;
+}
+
+
+int RegisterHotKeys_Copy()
+{
+	RegisterHotKeys_Common(
+		[]() {
+		string cmd = "C";
+		//scl.RunCMD(cmd);
+		SaveClipboardContent2File(OutputFile);
+	},
+		[]() {
+		SimulateCMDs scl;
+		scl.RunCMD("W-3");
+	},
+		[]() {
+		WORD wd[1] = { VK_RIGHT };
+		SimulateKeyArrayInput(wd, 1);
+	}
+	);
+
+	return 0;
+}
+
+
 
 int RegisterHotKeys()
 {
@@ -461,15 +656,22 @@ int RegisterHotKeys()
 
 
 				// For Image Right Click
-				scl.RunCMD("MCR S100 Io");
+		/*		scl.RunCMD("MCR S100 Io");
 
 				bool r = SaveClipboard2File();
 				if (!r) {
 					scl.RunCMD("MCR S100 Io");
 					printf("====>REDO\n");
 					SaveClipboard2File();
-				}
-				/*string cmd = "MCR S200 G MM+10,10 MCL";
+				}*/
+
+				string cmd = "C";
+				//scl.RunCMD(cmd);
+				SaveClipboardContent2File(OutputFile);
+
+
+				/*
+				string cmd = "MCR S200 G MM+10,10 MCL";
 				scl.RunCMD(cmd);
 
 				bool r = SaveClipboardContent2File(OutputFile);
@@ -480,6 +682,7 @@ int RegisterHotKeys()
 				}*/
 			}
 			else if (m_HotKeyId3 == msg.wParam) {
+
 				scl.RunCMD("W-3");
 			}
 			else if (m_HotKeyId4 == msg.wParam) {
@@ -508,7 +711,7 @@ END:
 INT KSMain(int argc, CHAR * argv[])
 {
 
-	thread t1(RegisterHotKeys);
+	thread t1(RegisterHotKeys_Copy);
 
 
 	// 582 443 + 20
