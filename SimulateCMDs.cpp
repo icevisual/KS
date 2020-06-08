@@ -190,6 +190,14 @@ int SimulateCMDs::Run()
 			// Sleep ms
 			Process_S(params);
 			break;
+		case 'w':
+			// Save Ctrl + S
+		{
+			printf("ctrl + w\n");
+			WORD Keys2[] = { VK_CONTROL,'w' - 'a' + 'A' };
+			PressKeys(Keys2);
+			break;
+		}
 		case 'B':
 			// Save Ctrl + S
 		{

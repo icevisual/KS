@@ -393,11 +393,11 @@ int RegisterHotKeys_Image()
 		[]() { 
 			SimulateCMDs scl;
 			// For Image Right Click
-			scl.RunCMD("MCR S100 Io");
+			scl.RunCMD("MCR S100 Io S100");
 
 			bool r = SaveClipboard2File_Image(OutputFile);
 			if (!r) {
-				scl.RunCMD("MCR S100 Io");
+				scl.RunCMD("MCR S100 Io S100");
 				DEBUG_LOG("Retry\n");
 				SaveClipboard2File_Image(OutputFile);
 			}
@@ -411,6 +411,36 @@ int RegisterHotKeys_Image()
 			SimulateKeyArrayInput(wd, 1);
 		}
 	);
+
+	return 0;
+}
+
+
+int RegisterHotKeys_Image_1()
+{
+	RegisterHotKeys_Common(
+		[]() {
+			SimulateCMDs scl;
+			ClearClipboard();
+			// For Image Right Click
+			scl.RunCMD("MCR S100 Io S100");
+
+			bool r = SaveClipboard2File_Image(OutputFile);
+			if (!r) {
+				scl.RunCMD("MCR S100 Io S100");
+				DEBUG_LOG("Retry\n");
+				SaveClipboard2File_Image(OutputFile);
+			}
+		},
+		[]() {
+			SimulateCMDs scl;
+			scl.RunCMD("W-3");
+		},
+			[]() {
+			SimulateCMDs scl;
+			scl.RunCMD("w");
+		}
+		);
 
 	return 0;
 }
@@ -489,7 +519,12 @@ INT KSMain(int argc, CHAR * argv[])
 			thread t1(RegisterHotKeys_Image);
 			t1.join();
 		}
-		
+		else if (Listen == "i1")
+		{
+			DEBUG_LOGN("Hot Keys For Image 1");
+			thread t1(RegisterHotKeys_Image_1);
+			t1.join();
+		}
 		//HWND cmd = GetConsoleWindow();
 
 		//auto pwnd = FindWindow(L"ExploreWClass", NULL); //希望找到资源管理器
