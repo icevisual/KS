@@ -416,6 +416,24 @@ int RegisterHotKeys_Image()
 }
 
 
+int RegisterHotKeys_RunBat()
+{
+	RegisterHotKeys_Common(
+		[]() {
+			system("1.bat");
+		},
+		[]() {
+			system("2.bat");
+		},
+		[]() {
+
+		}
+		);
+
+	return 0;
+}
+
+
 int RegisterHotKeys_Image_1()
 {
 	RegisterHotKeys_Common(
@@ -523,6 +541,12 @@ INT KSMain(int argc, CHAR * argv[])
 		{
 			DEBUG_LOGN("Hot Keys For Image 1");
 			thread t1(RegisterHotKeys_Image_1);
+			t1.join();
+		}
+		else if (Listen == "b")
+		{
+			DEBUG_LOGN("Hot Keys For Run Bat");
+			thread t1(RegisterHotKeys_RunBat);
 			t1.join();
 		}
 		//HWND cmd = GetConsoleWindow();
