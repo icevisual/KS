@@ -387,6 +387,83 @@ END:
 	return 0;
 }
 
+
+int RegisterHotKeys_CommonNumberBat5()
+{
+	HWND hWnd = NULL;		// 窗口句柄
+	MSG msg = { 0 };		// 消息
+	DWORD dwThreadId = 0;	// 线程 ID
+	DWORD error = 0;
+	ATOM m_HotKeyId1 = GlobalAddAtom(_T("KS-STOP")) - 0xc000;
+	ATOM m_HotKeyId2 = GlobalAddAtom(_T("KS-00001")) - 0xc000;
+	ATOM m_HotKeyId3 = GlobalAddAtom(_T("KS-00002")) - 0xc000;
+	ATOM m_HotKeyId4 = GlobalAddAtom(_T("KS-00003")) - 0xc000;
+	ATOM m_HotKeyId5 = GlobalAddAtom(_T("KS-00004")) - 0xc000;
+	ATOM m_HotKeyId6 = GlobalAddAtom(_T("KS-00005")) - 0xc000;
+
+
+	LocalRegisterHotKey(hWnd, m_HotKeyId1, MOD_NOREPEAT, VK_NUMPAD9);
+	LocalRegisterHotKey(hWnd, m_HotKeyId2, MOD_NOREPEAT, VK_NUMPAD1);
+	LocalRegisterHotKey(hWnd, m_HotKeyId3, MOD_NOREPEAT, VK_NUMPAD2);
+	LocalRegisterHotKey(hWnd, m_HotKeyId4, MOD_NOREPEAT, VK_NUMPAD3);
+	LocalRegisterHotKey(hWnd, m_HotKeyId5, MOD_NOREPEAT, VK_NUMPAD4);
+	LocalRegisterHotKey(hWnd, m_HotKeyId6, MOD_NOREPEAT, VK_NUMPAD5);
+
+	ClearClipboard();
+
+	DEBUG_LOG("Press Key `NumPad 1` To Stop Cycle\n");
+
+	while (GetMessage(&msg, NULL, 0, 0) != 0) {
+		DispatchMessage(&msg);
+		if (msg.message == WM_HOTKEY) {
+
+			if (m_HotKeyId1 == msg.wParam) {
+				DEBUG_LOGN("User Stopped");
+				goto END;
+			}
+			else if (m_HotKeyId2 == msg.wParam) {
+				system("1.sh");
+			}
+			else if (m_HotKeyId3 == msg.wParam) {
+
+				system("2.sh");
+			}
+			else if (m_HotKeyId4 == msg.wParam) {
+				system("3.sh");
+			}
+			else if (m_HotKeyId5 == msg.wParam) {
+				system("4.sh");
+			}
+			else if (m_HotKeyId6 == msg.wParam) {
+				system("5.sh");
+			}
+		}
+	}
+
+END:
+
+	UnregisterHotKey(hWnd, m_HotKeyId1);
+	UnregisterHotKey(hWnd, m_HotKeyId2);
+	UnregisterHotKey(hWnd, m_HotKeyId3);
+	UnregisterHotKey(hWnd, m_HotKeyId4);
+	UnregisterHotKey(hWnd, m_HotKeyId5);
+	UnregisterHotKey(hWnd, m_HotKeyId6);
+	GlobalDeleteAtom(m_HotKeyId1);
+	GlobalDeleteAtom(m_HotKeyId2);
+	GlobalDeleteAtom(m_HotKeyId3);
+	GlobalDeleteAtom(m_HotKeyId4);
+	GlobalDeleteAtom(m_HotKeyId5);
+	GlobalDeleteAtom(m_HotKeyId6);
+
+	//system("pause");
+
+	return 0;
+}
+
+
+
+
+
 int RegisterHotKeys_Image()
 {
 	RegisterHotKeys_Common(
@@ -543,12 +620,19 @@ INT KSMain(int argc, CHAR * argv[])
 			thread t1(RegisterHotKeys_Image_1);
 			t1.join();
 		}
+		else if (Listen == "b5")
+		{
+			DEBUG_LOGN("Hot Keys For Run Bat5");
+			thread t1(RegisterHotKeys_CommonNumberBat5);
+			t1.join();
+		}
 		else if (Listen == "b")
 		{
 			DEBUG_LOGN("Hot Keys For Run Bat");
 			thread t1(RegisterHotKeys_RunBat);
 			t1.join();
 		}
+		// 
 		//HWND cmd = GetConsoleWindow();
 
 		//auto pwnd = FindWindow(L"ExploreWClass", NULL); //希望找到资源管理器
